@@ -1,0 +1,133 @@
+
+----------------------------------------------------------------
+JZipUpdate
+----------------------------------------------------------------
+
+The latest information and files can be found at:
+
+	http://jzipupdate.sourceforge.net
+
+
+----------------------------------------------------------------
+	   Table of Contents
+----------------------------------------------------------------
+
+	1. What does it do?
+	2. How to use
+	3. Licensing and Usage
+
+----------------------------------------------------------------
+	1. What does it do?
+----------------------------------------------------------------
+
+Update ZIP and JAR files incrementally over HTTP transferring
+only the data that has changed in compressed form.
+Does not require any pre- or on-the-fly compression or any
+application/code running server-side except a HTTP 1.1-compliant
+web server and an index file created at time of deployment.
+
+
+----------------------------------------------------------------
+	2. How to use
+----------------------------------------------------------------
+
+JZIPUpdate can be used both as stand-alone application from a
+command line, and of course programmatically from your own code.
+The current stand-alone application always creates a UI progress
+dialog, so it's currently not possible to run in a pure
+text-based environment like terminals.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	2.1 Programmatically Updating ZIP/JAR Files
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Updating a single ZIP file:
+ ______________________________________________________________
+|                                                              |
+|   import java.util.zip.ZipFile;                              |
+|   import de.vxart.zipupdate.UpdateEngine;                    |
+|   import de.vxart.zipupdate.UpdateLocation;                  |
+|                                                              |
+|   ...                                                        |
+|                                                              |
+|   ZipFile archive = new ZipFile(...);                        |
+|   URL url = new URL("http://www.example.com/files/bar.zip"); |
+|                                                              |
+|   UpdateEngine engine = new UpdateEngine();                  |
+|   engine.update(archive, new UpdateLocation(url));           |
+|______________________________________________________________|
+
+
+Updating multiple ZIP files:
+
+
+ ______________________________________________________________
+|                                                              |
+|   import java.util.zip.ZipFile;                              |
+|   import de.vxart.zipupdate.UpdateEngine;                    |
+|   import de.vxart.zipupdate.UpdateLocation;                  |
+|                                                              |
+|   ...                                                        |
+|                                                              |
+|   ZipFile[] archives = ...;                                  |
+|   UpdateLocation[] locations = ...;                          |
+|   String[] messages = ...;                                   |
+|                                                              |
+|   UpdateEngine engine = new UpdateEngine();                  |
+|   engine.update(archives, locations, messages);              |
+|______________________________________________________________|
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	2.2 Manually Updating ZIP/JAR Files from the Command Line
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+Updating a single archive (replace the x.y by the actual version
+you're using):
+ ______________________________________________________________
+|                                                              |
+| java -jar jzipupdate-x.y.jar archive.zip http://www.example.com/files/bar.zip
+|______________________________________________________________|
+
+or for multiple archives:
+ ______________________________________________________________
+|                                                              |
+| java -jar jzipupdate-x.y.jar /somedirectory-with-ZIP-files/ http://www.example.com/files/
+|______________________________________________________________|
+
+Note that when updating multiple files from the command line,
+you specify a directory containing archives rather than a list
+of archives, and you provide a "base URL" to which the name of
+any archive found in the directory will be appended.
+For example, when the directory contains monkey.zip and
+banana.jar, JZIPUpdate will update from
+http://www.example.com/files/monkey.zip and
+http://www.example.com/files/banana.jar respectively.
+
+
+----------------------------------------------------------------
+	3. Licensing and Usage
+----------------------------------------------------------------
+
+Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+
+A copy of the License can be found in the LICENSE file or at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+either express or implied. See the License for the specific
+language governing permissions and limitations under the
+License.
+
+
+----------------------------------------------------------------
+JZIPUpdate is hosted on SourceForge.net, http://sourceforge.net/
+
+Java is a trademark or registered trademark of Sun Microsystems,
+Inc. in the United States and other countries.
+----------------------------------------------------------------
