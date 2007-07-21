@@ -24,8 +24,7 @@ import java.util.List;
  * 
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class ProgressListenerManager implements
-	ProgressListener, Iterable
+public class ProgressListenerManager implements ProgressListener, Iterable<ProgressListener>
 {
 	private List<ProgressListener> listeners;
 	

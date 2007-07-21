@@ -44,6 +44,7 @@ public class MultiProgressDialog implements MultiProgressListener
 		
 		overallProgress = new ProgressPanel()
 		{
+            @Override
 			public void finish()
 			{
 				super.finish();

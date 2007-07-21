@@ -60,31 +60,32 @@ public class ThrottledInputStream extends FilterInputStream
 			throw new IOException("Interrupted: " + iex.getMessage());
 		}
 	}
-	
-	public int read()
-		throws IOException
+
+    @Override
+	public int read() throws IOException
 	{
 		throttle(4);
 		
 		return in.read();
 	}
-	
-	public int read(byte[] b, int off, int len)
-		throws IOException
+
+    @Override
+	public int read(byte[] b, int off, int len) throws IOException
 	{
 		throttle(len-off);
 		
 		return in.read(b, off, len);
 	}
-	
-	public int read(byte[] b)
-		throws IOException
+
+    @Override
+	public int read(byte[] b) throws IOException
 	{
 		throttle(b.length);
 		
 		return in.read(b);
 	}
-	
+
+    @Override
 	public long skip(long n) throws IOException
 	{
 		throttle(n);

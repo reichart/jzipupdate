@@ -65,7 +65,8 @@ public class LimitedInputStream extends FilterInputStream
 		long rem = limit - bytesRead;
 		return rem;
 	}
-	
+
+    @Override
 	public int available() throws IOException
 	{
 		int available = in.available();
@@ -74,7 +75,7 @@ public class LimitedInputStream extends FilterInputStream
 		return available > rem ? (int)rem : available;
 	}
 	
-	
+    @Override
 	public int read() throws IOException
 	{
 		if(bytesRead >= limit)
@@ -87,9 +88,8 @@ public class LimitedInputStream extends FilterInputStream
 		
 		return b;
 	}
-	
-	public int read(byte[] b, int off, int len)
-		throws IOException
+    @Override
+	public int read(byte[] b, int off, int len) throws IOException
 	{
 		if (bytesRead >= limit)
 			return -1;
@@ -104,13 +104,14 @@ public class LimitedInputStream extends FilterInputStream
 		
 		return read;
 	}
-	
-	public int read(byte[] b)
-		throws IOException
+
+    @Override
+	public int read(byte[] b) throws IOException
 	{
 		return this.read(b, 0, b.length);
 	}
-	
+
+    @Override
 	public long skip(long n) throws IOException
 	{
 		if (bytesRead >= limit)
@@ -143,8 +144,8 @@ public class LimitedInputStream extends FilterInputStream
 	/**
 	 * "Closes" the InputStream by skipping all remaining bytes. 
 	 */
-	public void close()
-		throws IOException
+    @Override
+	public void close() throws IOException
 	{
 		skipAll();
 	}

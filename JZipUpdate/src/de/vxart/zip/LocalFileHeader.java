@@ -62,6 +62,7 @@ public class LocalFileHeader extends ZipHeader
 	 * Returns a really long String representation of a LFH instance.
 	 * Use only for debugging, not for daily consumption.
 	 */
+    @Override
 	public String toString()
 	{
 		return

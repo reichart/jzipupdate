@@ -15,6 +15,9 @@
  */
 package de.vxart.zipupdate;
 
+import static de.vxart.zip.ZipConstants.CENTRAL_DIRECTORY_LENGTH;
+import static de.vxart.zip.ZipConstants.END_OF_CENTRAL_DIRECTORY_LENGTH;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -25,7 +28,6 @@ import java.io.RandomAccessFile;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
@@ -35,7 +37,6 @@ import java.util.zip.DeflaterOutputStream;
 
 import de.vxart.zip.CentralDirectoryRecord;
 import de.vxart.zip.EndOfCentralDirectory;
-import static de.vxart.zip.ZipConstants.*;
 
 /**
  * Creates an index file from ZIP/JAR archives used by the client-side
@@ -97,7 +98,7 @@ public class Indexer
 	
 	private Indexer()
 	{
-		
+		// Empty private constructor
 	}
 	
 	/**
@@ -108,8 +109,7 @@ public class Indexer
 	 * @param archive	the archive to generate an index for
 	 * @throws IOException
 	 */
-	public static void index(File archive)
-		throws IOException
+	public static void index(File archive) throws IOException
 	{
 		logger.log(Level.INFO, "Generating index for " + archive.getAbsolutePath());
 		
@@ -136,7 +136,7 @@ public class Indexer
 		{
 			String name = entry.getName();
 			long crc = entry.getCrc();
-			long endOffset = entries.get(entry);
+			long endOffset = entries.get(entry).longValue();
 			
 			/*
 			System.out.println(
@@ -241,7 +241,7 @@ public class Indexer
 			 */
 			if(resource != null)
 			{
-				entries.put(resource, (long)header.offsetToLocalFileHeader-1);
+				entries.put(resource, Long.valueOf(header.offsetToLocalFileHeader - 1));
 			}
 			
 			resource = new Resource(name);
@@ -253,7 +253,7 @@ public class Indexer
 		 */
 		if(resource != null)
 		{
-			entries.put(resource, (long)eocd.centralDirectoryOffset-1);
+			entries.put(resource, Long.valueOf(eocd.centralDirectoryOffset - 1));
 		}
 		
 		return entries;

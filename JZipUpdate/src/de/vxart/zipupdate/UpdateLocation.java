@@ -31,7 +31,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -261,8 +260,8 @@ public class UpdateLocation
             remote = conn.getInputStream();
         } catch (IOException e) {
             logger.log(Level.INFO, "IOException while connecting to source: " + url + " , " + e.getMessage());
-            final Map lHeaderFields = conn.getHeaderFields();
-            final Iterator lHeaders = lHeaderFields.keySet().iterator();
+            final Map<String,List<String>> lHeaderFields = conn.getHeaderFields();
+            final Iterator<String> lHeaders = lHeaderFields.keySet().iterator();
             while (lHeaders.hasNext()) {
                 Object lHeaderObject = lHeaders.next();
                 logger.log(Level.INFO, "HTTPResponseHeader - " + lHeaderObject + ": " + lHeaderFields.get(lHeaderObject));
@@ -411,7 +410,8 @@ public class UpdateLocation
 			{
 				throw new UnsupportedOperationException();
 			}
-			
+
+            @Override
 			public String toString()
 			{
 				return getClass().getName() + ":Iterator[multipart]";
@@ -491,7 +491,7 @@ public class UpdateLocation
 	 * Note: This class has a natural ordering that is
      *       inconsistent with equals.
 	 */
-	protected class Range implements Comparable
+	protected class Range implements Comparable <Object>
 	{
 		long start, end;
 		
@@ -500,7 +500,8 @@ public class UpdateLocation
 			this.start = start;
 			this.end = end;
 		}
-		
+
+        @Override
 		public String toString()
 		{
 			return (start+1) + "-" + end;
@@ -529,8 +530,9 @@ public class UpdateLocation
 	{
 		listeners.remove(listener);
 	}
-	
-	public String toString()
+
+    @Override
+    public String toString()
 	{
 		String speed =
 			(DOWNLOAD_SPEED > 0)
