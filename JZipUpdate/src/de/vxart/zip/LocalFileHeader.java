@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@ import static de.vxart.zip.ZipConstants.LOCAL_FILE_HEADER_LENGTH;
 
 /**
  * Encapsulates a "Local File Header" block from a ZIP file.
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class LocalFileHeader extends ZipHeader
@@ -35,17 +35,17 @@ public class LocalFileHeader extends ZipHeader
 	public long crc;
 	public int nameLength;
 	public int extraLength;
-	
-	
+
+
 	/**
 	 * Constructs a new LFH from the given byte array.
-	 * 
+	 *
 	 * @param bytes a byte array containing a valid LFH block
 	 */
 	public LocalFileHeader(byte[] bytes)
 	{
 		super(LOCAL_FILE_HEADER, LOCAL_FILE_HEADER_LENGTH, bytes);
-		
+
 		versionNeededToExtract = buffer.getShort();
 		flag = buffer.getShort();
 		compressionMethod = buffer.getShort();
@@ -57,7 +57,7 @@ public class LocalFileHeader extends ZipHeader
 		nameLength = buffer.getShort();
 		extraLength = buffer.getShort();
 	}
-	
+
 	/**
 	 * Returns a really long String representation of a LFH instance.
 	 * Use only for debugging, not for daily consumption.

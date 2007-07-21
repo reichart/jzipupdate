@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
 import de.vxart.zipupdate.ProgressListener;
 
 /**
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class ProgressDialog implements ProgressListener
@@ -31,19 +31,19 @@ public class ProgressDialog implements ProgressListener
 	private ProgressPanel panel;
 	private JOptionPane pane;
 	private JDialog dialog;
-	
-	
+
+
 	public ProgressDialog()
 	{
 		panel = new ProgressPanel();
-		
+
 		pane = new JOptionPane(
 			panel, // message
 			JOptionPane.INFORMATION_MESSAGE, // msg type
 			JOptionPane.DEFAULT_OPTION, // options type
 			null, // icon
 			new Object[0]); // options
-		
+
 		dialog = pane.createDialog(null, "Updating");
 		Dimension size = dialog.getSize();
 		dialog.setSize(size.width*3/2, size.height);
@@ -55,13 +55,13 @@ public class ProgressDialog implements ProgressListener
 		panel.init(message);
 		dialog.setVisible(true);
 	}
-	
+
 	public void init(String message, int min, int max)
 	{
 		panel.init(message, min, max);
 		dialog.setVisible(true);
 	}
-	
+
 	public void update(int value)
 	{
 		panel.update(value);
@@ -76,7 +76,7 @@ public class ProgressDialog implements ProgressListener
 	{
 		return panel.getProgress();
 	}
-	
+
 	public void finish()
 	{
 		panel.finish();

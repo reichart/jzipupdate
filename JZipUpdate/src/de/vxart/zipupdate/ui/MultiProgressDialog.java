@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,7 @@ import de.vxart.zipupdate.MultiProgressListener;
 import de.vxart.zipupdate.ProgressListener;
 
 /**
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class MultiProgressDialog implements MultiProgressListener
@@ -35,13 +35,13 @@ public class MultiProgressDialog implements MultiProgressListener
 	private ProgressPanel panel;
 	private JOptionPane pane;
 	JDialog dialog;
-	
+
 	public MultiProgressDialog()
 	{
 		super();
-		
+
 		panel = new ProgressPanel();
-		
+
 		overallProgress = new ProgressPanel()
 		{
             @Override
@@ -54,39 +54,39 @@ public class MultiProgressDialog implements MultiProgressListener
 		};
 		overallProgress.setSpeedShown(false);
 		overallProgress.setTimeShown(false);
-		
-		Box multiPanel = new Box(BoxLayout.Y_AXIS); 
+
+		Box multiPanel = new Box(BoxLayout.Y_AXIS);
 		multiPanel.add(overallProgress);
 		multiPanel.add(panel);
-		
+
 		pane = new JOptionPane(
 			multiPanel, // message
 			JOptionPane.INFORMATION_MESSAGE, // msg type
 			JOptionPane.DEFAULT_OPTION, // options type
 			null, // icon
 			new Object[0]); // options
-		
+
 		overallProgress.init("Initializing...");
-		
+
 		dialog = pane.createDialog(null, "Updating");
 		Dimension size = dialog.getSize();
 		dialog.setSize(size.width*3/2, size.height);
 		dialog.setModal(false);
 	}
-	
+
 
 	public void init(String message)
 	{
 		panel.init(message);
 		dialog.setVisible(true);
 	}
-	
+
 	public void init(String message, int min, int max)
 	{
 		panel.init(message, min, max);
 		dialog.setVisible(true);
 	}
-	
+
 	public void update(int value)
 	{
 		panel.update(value);
@@ -101,12 +101,12 @@ public class MultiProgressDialog implements MultiProgressListener
 	{
 		return panel.getProgress();
 	}
-	
+
 	public void finish()
 	{
 		panel.finish();
 	}
-	
+
 	public ProgressListener getOverallProgressListener()
 	{
 		return overallProgress;

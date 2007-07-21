@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,30 +20,30 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Provides a convenient way to handle multiple ProgressListeners at once.  
- * 
+ * Provides a convenient way to handle multiple ProgressListeners at once.
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class ProgressListenerManager implements ProgressListener, Iterable<ProgressListener>
 {
 	private List<ProgressListener> listeners;
-	
-	
+
+
 	public ProgressListenerManager()
 	{
 		this.listeners = new LinkedList<ProgressListener>();
 	}
-	
+
 	public void add(ProgressListener listener)
 	{
 		listeners.add(listener);
 	}
-	
+
 	public void remove(ProgressListener listener)
 	{
 		listeners.remove(listener);
 	}
-	
+
 	public void init(String message)
 	{
 		for(ProgressListener listener : listeners)
@@ -75,7 +75,7 @@ public class ProgressListenerManager implements ProgressListener, Iterable<Progr
 			listener.label(label);
 		}
 	}
-	
+
 	public void finish()
 	{
 		for(ProgressListener listener : listeners)
@@ -83,7 +83,7 @@ public class ProgressListenerManager implements ProgressListener, Iterable<Progr
 			listener.finish();
 		}
 	}
-	
+
 	/**
 	 * Returns and Iterator over all ProgressListeners
 	 * registered with this manager.
@@ -92,7 +92,7 @@ public class ProgressListenerManager implements ProgressListener, Iterable<Progr
 	{
 		return listeners.iterator();
 	}
-	
+
 	/**
 	 * Returns the progress from the first registered listeners.
 	 */
@@ -100,10 +100,10 @@ public class ProgressListenerManager implements ProgressListener, Iterable<Progr
 	{
 		return listeners.get(0).getProgress();
 	}
-	
+
 	/**
 	 * Returns the number of ProgressListener registered with this manager.
-	 * 
+	 *
 	 * @return the number of ProgressListener in this manager.
 	 */
 	public int size()

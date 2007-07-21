@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@ package de.vxart.zip;
 
 /**
  * Contains constants and magical numbers used for parsing ZIP archives.
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class ZipConstants
@@ -26,12 +26,12 @@ public class ZipConstants
 	public static final int CENTRAL_DIRECTORY = 0x02014B50;
 	public static final int EXTENDED_FILE_HEADER = 0x08074B50;
 	public static final int END_OF_CENTRAL_DIRECTORY = 0x06054B50;
-	
+
 	public static final int CENTRAL_DIRECTORY_LENGTH = 46;
 	public static final int LOCAL_FILE_HEADER_LENGTH = 30;
 	public static final int EXTENDED_FILE_HEADER_LENGTH = 16;
 	public static final int END_OF_CENTRAL_DIRECTORY_LENGTH = 22;
-	
+
 	public static final int METHOD_STORED = 0;
 	public static final int METHOD_SRHUNK = 1;
 	public static final int METHOD_REDUCED_1 = 2;

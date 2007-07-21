@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@ import static de.vxart.zip.ZipConstants.END_OF_CENTRAL_DIRECTORY_LENGTH;
 
 /**
  * Encapsulates a "End of Central Directory" block from a ZIP file.
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class EndOfCentralDirectory extends ZipHeader
@@ -34,16 +34,16 @@ public class EndOfCentralDirectory extends ZipHeader
 	public int centralDirectoryOffset;
 	public short commentLength;
 
-	
+
 	/**
 	 * Constructs a new ECD from the given byte array.
-	 * 
+	 *
 	 * @param bytes a byte array containing a valid ECD block
 	 */
 	public EndOfCentralDirectory(byte[] bytes)
 	{
 		super(END_OF_CENTRAL_DIRECTORY, END_OF_CENTRAL_DIRECTORY_LENGTH, bytes);
-		
+
 		currentDiskNumber = buffer.getShort();
 		cdStartDiskNumber = buffer.getShort();
 		centralDirectoryRecordsThisDisk = buffer.getShort();
@@ -52,5 +52,5 @@ public class EndOfCentralDirectory extends ZipHeader
 		centralDirectoryOffset = buffer.getInt();
 		commentLength = buffer.getShort();
 	}
-	
+
 }

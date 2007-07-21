@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@ import java.io.InputStream;
 /**
  * Encapsulates information relevant to update a ZIP entry and
  * access to its data, similar to java.util.zip.ZipEntry.
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class Resource
@@ -28,18 +28,18 @@ public class Resource
 	private String name;
 	private InputStream data;
 	private long crc;
-	
+
 	public final static String FLAG_NOOP = "===";
 	public final static String FLAG_ADD = "+++";
 	public final static String FLAG_UPDATE = "!!!";
 	public final static String FLAG_REMOVE = "---";
-	
-	
+
+
 	public Resource(String name)
 	{
 		this.name = name;
 	}
-	
+
 	public InputStream getData() {
 		return data;
 	}

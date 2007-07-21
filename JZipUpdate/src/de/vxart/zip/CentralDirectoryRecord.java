@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@ import static de.vxart.zip.ZipConstants.CENTRAL_DIRECTORY_LENGTH;
 
 /**
  * Encapsulates a single "Central Directory Record" block from a ZIP file.
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class CentralDirectoryRecord extends ZipHeader
@@ -41,17 +41,17 @@ public class CentralDirectoryRecord extends ZipHeader
 	public short internalFileAttributes;
 	public int externalFileAttributes;
 	public int offsetToLocalFileHeader;
-	
-	
+
+
 	/**
 	 * Constructs a new CDR from the given byte array.
-	 * 
+	 *
 	 * @param bytes a byte array containing a valid CDR block
 	 */
 	public CentralDirectoryRecord(byte[] bytes)
 	{
 		super(CENTRAL_DIRECTORY, CENTRAL_DIRECTORY_LENGTH, bytes);
-		
+
 		versionMadeBy = buffer.getShort();
 		versionNeededToExtract = buffer.getShort();
 		flag = buffer.getShort();

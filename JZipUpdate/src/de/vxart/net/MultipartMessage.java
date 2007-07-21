@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,7 +32,7 @@ import de.vxart.io.LimitedInputStream;
  * the exception that it relies on optional headers to parse the
  * size of the data payload of each MIME part ("Content-Length" or
  * "Content-Range") which are usually present in HTTP responses.
- *  
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class MultipartMessage
@@ -41,26 +41,26 @@ public class MultipartMessage
 		Iterator<MultipartMessage.Part>
 {
 	private final static byte[] DASH_DELIM = {0x2D, 0x2D};
-	
+
 	private final static String CONTENT_LENGTH = "Content-Length";
 	private final static String CONTENT_RANGE = "Content-Range";
-	
-	private final String DASH_BOUNDARY; 
+
+	private final String DASH_BOUNDARY;
 	private DataInputStream input;
 	private Part previousPart;
-	
-	
+
+
 	/**
 	 * Constructs a MultipartMessage that parses from the given
 	 * stream using the specified boundary to separate parts.
-	 * 
+	 *
 	 * @param input		the stream to read the multipart MIME message from
 	 * @param boundary	the boundary used to delimit the MIME parts
 	 */
 	public MultipartMessage(InputStream input, String boundary)
 	{
 		DASH_BOUNDARY = new String(DASH_DELIM) + boundary;
-		
+
 		/*
 		 * Wrapping the original InputStream into that class
 		 * is mandatory for the multipart parsing to work!
@@ -69,12 +69,12 @@ public class MultipartMessage
 		 */
 		this.input = new DataInputStream(input);
 	}
-	
-	
+
+
 	/**
 	 * Tries to extract the size of the data
-	 * payload from the headers of a part. 
-	 * 
+	 * payload from the headers of a part.
+	 *
 	 * TODO conform to RFC by not relying on optional header
 	 * 		and just read data up to the next boundary
 	 */
@@ -82,7 +82,7 @@ public class MultipartMessage
 		throws IOException
 	{
 		long size = -1;
-		
+
 		String contentLength = headers.get(CONTENT_LENGTH);
 		if(contentLength == null)
 		{
@@ -90,22 +90,22 @@ public class MultipartMessage
 			 * The value of the Content-Range header is structured
 			 * like "bytes START-END/TOTAL", so we need to substract
 			 * values of the START and END offsets to get the actual
-			 * size of the data. 
+			 * size of the data.
 			 */
 			String contentRange = headers.get(CONTENT_RANGE.toLowerCase());
-			
+
 			if(contentRange == null)
 				throw new IOException("Missing header to extract length of data.");
-			
+
 			Pattern numberPattern = Pattern.compile("(\\d)+");
 			Matcher matcher = numberPattern.matcher(contentRange);
-			
+
 			/*
 			 * This arrays will hold the number in this order:
 			 * START, END, OFFSET
 			 */
 			long[] rangeNumbers = new long[3];
-			
+
 			try
 			{
 				for(int i = 0; matcher.find(); i++)
@@ -119,7 +119,7 @@ public class MultipartMessage
 					"Invalid "+CONTENT_RANGE+" header to " +
 					"extract length of data: " + contentRange);
 			}
-			
+
 			size = rangeNumbers[1] - rangeNumbers[0];
 		}
 		else
@@ -139,20 +139,20 @@ public class MultipartMessage
 					"extract length of data: " + contentLength);
 			}
 		}
-		
+
 		return size;
 	}
-	
+
 	/**
 	 * Reads a line from the input stream terminated by CRLF.
 	 * This method uses the US-ASCII encoding to create the
-	 * returned String. 
+	 * returned String.
 	 */
 	private String readLine()
 		throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
+
 		int bite;
 		while((bite = input.read()) != -1)
 		{
@@ -167,13 +167,13 @@ public class MultipartMessage
 					throw new IllegalArgumentException("Found CR in line but not followed by LF.");
 				}
 			}
-			
+
 			baos.write(bite);
 		}
-		
+
 		return new String(baos.toByteArray(), "us-ascii");
 	}
-	
+
 	/**
 	 * Ensures that the parser is right before
 	 * the beginning of the next part.
@@ -183,30 +183,30 @@ public class MultipartMessage
 		if(previousPart != null)
 			previousPart.skip();
 	}
-	
+
 	/**
 	 * Returns an Iterator over all parts of this multipart message.
-	 * 
+	 *
 	 * @return an Iterator over all parts
 	 */
 	public Iterator<MultipartMessage.Part> iterator()
 	{
 		return this;
 	}
-	
+
 	/**
 	 * Returns true if there's a next part available.
-	 * 
+	 *
 	 * @return true if there's a next part available, false otherwise
 	 */
 	public boolean hasNext()
 	{
 		ensurePosition();
-		
+
 		try
 		{
 			String line;
-			
+
 			/*
 			 * Find the boundary preceding the first part
 			 * (discarding the preamble if there is one)
@@ -214,10 +214,10 @@ public class MultipartMessage
 			do
 			{
 				line = readLine();
-				
+
 				/* TODO
-				 * Differences in multipart-responses from Apache and Tomcat? 
-				 * 
+				 * Differences in multipart-responses from Apache and Tomcat?
+				 *
 				if(line.equals(""))
 				{
 					throw new RuntimeException("Empty line in wrong place.");
@@ -225,7 +225,7 @@ public class MultipartMessage
 				*/
 			}
 			while(!line.startsWith(DASH_BOUNDARY));
-			
+
 			if(line.endsWith("--"))
 			{
 				/*
@@ -236,7 +236,7 @@ public class MultipartMessage
 				input.close();
 				return false;
 			}
-			
+
 			return true;
 		}
 		catch (IOException ioex)
@@ -244,39 +244,39 @@ public class MultipartMessage
 			throw new RuntimeException(ioex);
 		}
 	}
-	
+
 	/**
 	 * Returns the next part from this multipart message.
-	 * 
+	 *
 	 * @return the next part from this multipart message
 	 */
 	public MultipartMessage.Part next()
 	{
 		ensurePosition();
-		
+
 		try
 		{
 			/*
 			 * Parse any headers for this part
 			 */
 			Map<String, String> headers = new HashMap<String, String>();
-			
+
 			String line;
 			while(!(line = readLine()).equals(""))
 			{
 				int colon = line.indexOf(':');
-				
+
 				// TODO lower-casing header names might be a problem
 				String headerName = line.substring(0, colon).trim().toLowerCase();
 				String headerValue = line.substring(colon+1).trim();
-				
+
 				headers.put(headerName, headerValue);
 			}
-			
+
 			Part part = new Part(headers, input, getDataSize(headers));
-			
+
 			previousPart = part;
-			
+
 			return part;
 		}
 		catch (IOException ioex)
@@ -287,26 +287,26 @@ public class MultipartMessage
 
 	/**
 	 * This method is unsupported for MultipartMessages.
-	 * 
+	 *
 	 * @throws UnsupportedOperationException
 	 */
 	public void remove()
 	{
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public class Part
 	{
 		private Map<String, String> headers;
 		private LimitedInputStream data;
-		
-		
+
+
 		/**
 		 * Constructs a new Part with the specified headers
 		 * and InputStream as data source. The InputStream
 		 * will be wrapped into another stream that prevents
 		 * reading more bytes than specified by the limit.
-		 * 
+		 *
 		 * @param headers	the multipart headers for this Part
 		 * @param input		the InputStream from which this Part is fed
 		 * @param size		the size of the data payload
@@ -319,11 +319,11 @@ public class MultipartMessage
 			this.headers = headers;
 			this.data = new LimitedInputStream(input, size+1);
 		}
-		
+
 		/**
 		 * Skips over the data of this Part. Calling this
 		 * method more than once does not have any effect.
-		 * 
+		 *
 		 * @return true if any actually data has been skipped, false otherwise
 		 */
 		public boolean skip()
@@ -337,20 +337,20 @@ public class MultipartMessage
 				throw new RuntimeException("Failed to skip data", ioex);
 			}
 		}
-		
+
 		/**
 		 * Provides a stream containing the data of this part.
-		 * 
+		 *
 		 * @return a stream containing the data of this part
 		 */
 		public InputStream openStream()
 		{
 			return data;
 		}
-		
+
 		/**
 		 * Returns all headers associated with this part.
-		 * 
+		 *
 		 * @return all headers associated with this part
 		 */
 		public Map<String, String> getHeaders()

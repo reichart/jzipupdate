@@ -1,6 +1,6 @@
 /*
  * Copyright 2005 Philipp Reichart <philipp.reichart@vxart.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +30,7 @@ import static de.vxart.zip.ZipConstants.METHOD_STORED;
 
 /**
  * Extracts the data from a ZIP file block.
- * 
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class ZipEntryInputStream extends FilterInputStream
@@ -40,7 +40,7 @@ public class ZipEntryInputStream extends FilterInputStream
 	 * of a ZIP entry. This class expects the given InputStream to
 	 * be a complete ZIP local file block, starting with the magical
 	 * number 0x04034B50.
-	 * 
+	 *
 	 * @param in
 	 * @throws IOException
 	 */
@@ -48,32 +48,32 @@ public class ZipEntryInputStream extends FilterInputStream
 		throws IOException
 	{
 		super(in);
-		
+
 		byte[] headerBytes = new byte[LOCAL_FILE_HEADER_LENGTH];
 		in.readFully(headerBytes);
 		LocalFileHeader header = new LocalFileHeader(headerBytes);
-		
+
 		in.skipBytes(header.nameLength);
 		in.skipBytes(header.extraLength);
-		
+
 		switch (header.compressionMethod)
 		{
 			case METHOD_STORED:
 				break;
-				
+
 			case METHOD_DEFLATED:
 				Inflater decomp = new Inflater(true);
-				
+
 				/*
 				 * This ugly construct is brought to you by the weird
 				 * behavior of the Inflater class when in "nowrap" mode:
-				 * 
+				 *
 				 * From the javadoc of the Inflater(boolean) constructor:
 				 *     "When using the 'nowrap' option it is also
 				 *      necessary to provide an extra 'dummy' byte
 				 *      as input."
-				 *     
-				 * Luckily Java provides some ready-to-go classes :) 
+				 *
+				 * Luckily Java provides some ready-to-go classes :)
 				 */
 				this.in = new InflaterInputStream(
 					new SequenceInputStream(
@@ -81,7 +81,7 @@ public class ZipEntryInputStream extends FilterInputStream
 						new ByteArrayInputStream(new byte[1])),
 					decomp);
 				break;
-				
+
 			default:
 				throw new IOException(
 					"Unsupported compression method: " +
