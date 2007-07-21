@@ -42,20 +42,55 @@ import de.vxart.zipupdate.ui.MultiProgressDialog;
 import de.vxart.zipupdate.ui.ProgressDialog;
 
 /**
- * The work horse of the whole update system containing the diff
- * and patch functionality as well as hooks to register listeners.
- * 
+ * The work horse of the whole update system containing the diff and patch
+ * functionality as well as hooks to register listeners.<br>
+ * Use the <code>de.vxart.zipupdate.UpdateEngine.loglevel</code> system property to set the log
+ * level. Use the normal Java Logging levels (ALL, FINEST, CONFIG, FINER, FINE,
+ * INFO, WARNING, SEVERE).
+ *
  * @author Philipp Reichart, philipp.reichart@vxart.de
+ * @author Egal, egal (AT) mojang (DOT) com
  */
 public class UpdateEngine
 {
 	protected static Logger logger = Logger.getLogger("de.vxart.zipupdate");
-	
+
 	static
 	{
 		try
 		{
-			logger.setLevel(Level.INFO);
+            final String logLevel = System.getProperty("de.vxart.zipupdate.UpdateEngine.loglevel", "INFO");
+            if (logLevel.length() > 2)
+            {
+                if (logLevel.equalsIgnoreCase("ALL"))
+                {
+                    logger.setLevel(Level.ALL);
+                } else if (logLevel.equalsIgnoreCase("FINEST"))
+                {
+                    logger.setLevel(Level.FINEST);
+                } else if (logLevel.equalsIgnoreCase("CONFIG"))
+                {
+                    logger.setLevel(Level.CONFIG);
+                } else if (logLevel.equalsIgnoreCase("FINER"))
+                {
+                    logger.setLevel(Level.FINER);
+                } else if (logLevel.equalsIgnoreCase("FINE"))
+                {
+                    logger.setLevel(Level.FINE);
+                } else if (logLevel.equalsIgnoreCase("INFO"))
+                {
+                    logger.setLevel(Level.INFO);
+                } else if (logLevel.equalsIgnoreCase("WARNING"))
+                {
+                    logger.setLevel(Level.WARNING);
+                } else if (logLevel.equalsIgnoreCase("SEVERE"))
+                {
+                    logger.setLevel(Level.SEVERE);
+                }
+            } else
+            {
+                logger.setLevel(Level.INFO);
+            }
 			logger.setUseParentHandlers(false);
 			logger.addHandler(new ConsoleHandler());
 			logger.addHandler(new FileHandler("%t/jzipupdate.log"));
@@ -69,11 +104,11 @@ public class UpdateEngine
 			logger.log(Level.WARNING, "Failed to register log file", ex);
 		}
 	}
-	
+
 	private ProgressListenerManager multiListeners;
 	private ProgressListenerManager listeners;
-	
-	
+
+
 	/**
 	 * Provides a basic stand-alone way to update archives.
 	 */
@@ -90,7 +125,7 @@ public class UpdateEngine
 				" <directory> <update base URL>");
 			System.exit(1);
 		}
-		
+
 		/*
 		 * Use native LAF if possible
 		 */
@@ -102,12 +137,12 @@ public class UpdateEngine
 	    {
 	    	logger.log(Level.WARNING, "Failed to enable native LAF: " + ex.getMessage());
 	    }
-	    
+
 	    /*
 	     * Parse arguments
 	     */
 	    File input = new File(args[0]);
-		
+
 	    URL url = null;
 	    try
 	    {
@@ -118,12 +153,12 @@ public class UpdateEngine
 	    	logger.log(Level.SEVERE, "Invalid URL: " + args[1]);
 			System.exit(2);
 		}
-		
+
 	    /*
 		 * Create update engine and register graphical listener
 		 */
 		UpdateEngine engine = new UpdateEngine();
-		
+
 		if(input.isDirectory())
 		{
 			/*
@@ -138,21 +173,21 @@ public class UpdateEngine
 						return name.endsWith(".zip") || name.endsWith(".jar");
 					}
 				});
-			
+
 			if(files.length < 1)
 			{
 				logger.log(Level.WARNING, "No ZIP/JAR files found at " + input.getAbsolutePath());
 				System.exit(3);
 			}
-			
+
 			MultiProgressDialog mpd = new MultiProgressDialog();
 			mpd.init("Monkeys!");
 			engine.addProgressListener(mpd);
-			
+
 			ZipFile[] archives = new ZipFile[files.length];
 			UpdateLocation[] locations = new UpdateLocation[files.length];
 			String[] messages = new String[files.length];
-			
+
 			for(int i = 0; i < files.length; i++)
 			{
 				try
@@ -167,10 +202,10 @@ public class UpdateEngine
 					System.exit(4);
 				}
 			}
-			
+
 			engine.update(archives, locations, messages);
 		}
-		else 
+		else
 		{
 			if(!input.exists())
 			{
@@ -178,7 +213,7 @@ public class UpdateEngine
 				 * Create a minimal dummy ZIP file as update target.
 				 */
 				logger.log(Level.WARNING, "Update target doesn't exist, creating dummy: " + input.getAbsolutePath());
-				
+
 				ZipOutputStream zos = new ZipOutputStream(
 					new FileOutputStream(input));
 				zos.putNextEntry(new ZipEntry("banana"));
@@ -187,13 +222,13 @@ public class UpdateEngine
 				zos.closeEntry();
 				zos.close();
 			}
-			
+
 			ZipFile archive = new ZipFile(input);
 			engine.addProgressListener(new ProgressDialog());
-			engine.update(archive, new UpdateLocation(url));			
+			engine.update(archive, new UpdateLocation(url));
 		}
 	}
-	
+
 	/**
 	 * Constructs a new UpdateEngine instance.
 	 *
@@ -203,15 +238,15 @@ public class UpdateEngine
 		this.listeners = new ProgressListenerManager();
 		this.multiListeners = new ProgressListenerManager();
 	}
-	
+
 	/**
 	 * Updates multiple ZIP files from the given URLs.
-	 * 
+	 *
 	 * Displays a message for each ZIP file as it is
 	 * being updated; if there are not enough messages
 	 * for all ZIP files or the messages are NULL, the
-	 * file name will be used. 
-	 *  
+	 * file name will be used.
+	 *
 	 * @param archives	the ZIP files to update
 	 * @param locations	the locations where to look for the up-to-date ZIP files
 	 * @param messages	the messages to display for each ZIP file
@@ -220,6 +255,7 @@ public class UpdateEngine
 	public int update(ZipFile[] archives, UpdateLocation[] locations, String[] messages)
 		throws IOException
 	{
+
 		if(
 			archives.length != locations.length ||
 			locations.length != messages.length ||
@@ -231,31 +267,31 @@ public class UpdateEngine
 				+ locations.length + ", messages="
 				+ messages.length);
 		}
-		
+
 		multiListeners.init(
 			"Updating " + archives.length + " archives...",
 			0,
 			archives.length);
-		
+
 		int updated = 0;
 		for(int i = 0; i < archives.length; i++)
 		{
 			multiListeners.label(messages[i]);
-			
+
 			if(update(archives[i], locations[i]))
 				updated++;
-			
+
 			multiListeners.update(i+1);
 		}
-		
+
 		multiListeners.finish();
-		
+
 		return updated;
 	}
-	
+
 	/**
 	 * Updates a ZIP file from a given URL.
-	 * 
+	 *
 	 * @param archive	the ZIP file to update
 	 * @param location	the location where to look for the up-to-date ZIP file
 	 * @return			true if any updates have actually been performed, false otherwise
@@ -263,11 +299,11 @@ public class UpdateEngine
 	public boolean update(ZipFile archive, UpdateLocation location)
 		throws IOException
 	{
-		logger.log(Level.INFO, "Updating " + archive.getName() + " from " + location.getUrl());
-		
+		logger.log(Level.INFO, "TODO Updating " + archive.getName() + " from " + location.getUrl());
+
 		/*
 		 * Register any listeners on the UpdateLocation as well.
-		 * 
+		 *
 		 * TODO Why won't a simplified for(Foo f : Bar) work here?!
 		 */
 		Iterator<ProgressListener> it = listeners.iterator();
@@ -275,9 +311,9 @@ public class UpdateEngine
 		{
 			location.addProgressListener(it.next());
 		}
-		
+
 		listeners.init("Initializing...");
-		
+
 		/*
 		 * Initalize the patch set
 		 */
@@ -285,7 +321,7 @@ public class UpdateEngine
 		startTimer();
 		Set<Resource> client = init(archive);
 		logger.log(Level.FINE, "Initialized patch set (" + stopTimer() + " ms)");
-		
+
 		/*
 		 * Fetch server-side CRC list
 		 */
@@ -293,7 +329,7 @@ public class UpdateEngine
 		startTimer();
 		Set<Resource> server = location.getResources();
 		logger.log(Level.FINE, "Fetched server-side CRC list (" + stopTimer() + " ms)");
-		
+
 		/*
 		 * Diff contents of ZIP files
 		 */
@@ -301,15 +337,15 @@ public class UpdateEngine
 		startTimer();
 		Map<Resource, String> diff = diff(client, server);
 		logger.log(Level.FINE, "Diffing finished (" + stopTimer() + " ms)");
-		
+
 		/*
 		 * Some nice output for the people watching the program run :)
 		 */
-		
+
 		logger.log(Level.FINE, "Total items on server: " + server.size());
 		logger.log(Level.FINE, "Total items on client: " + archive.size());
 		printDiff(diff);
-		
+
 		/*
 		 * Patch the ZIP file
 		 */
@@ -324,33 +360,33 @@ public class UpdateEngine
 		{
 			logger.log(Level.INFO, "Updated " + archive.getName() + " (" + stopTimer() + " ms)");
 		}
-		
+
 		listeners.finish();
-		
+
 		return patched;
 	}
-	
+
 	private static void printDiff(Map<Resource, String> diff)
 	{
 		if(logger.isLoggable(Level.FINE))
 		{
 			int add, upd, noop, rem;
 			add = upd = noop = rem = 0;
-			
+
 			logger.log(Level.FINE, "Final patch set size: " + diff.size());
-			
+
 			logger.log(Level.FINE, "This is what I would do:");
-			
+
 			if(diff.size() < 1)
 			{
 				logger.log(Level.FINE, "\tKeep all. No patching necessary.");
 				return;
 			}
-			
+
 			for(Resource resource : diff.keySet())
 			{
 				String flag = diff.get(resource);
-				
+
 				if(flag == Resource.FLAG_NOOP)
 				{
 					noop++;
@@ -364,10 +400,10 @@ public class UpdateEngine
 					rem++;
 				else
 					assert false : ("Undefined flag: " + flag);
-				
+
 				logger.log(Level.FINER, "\t" + flag + " " + resource.getName());
 			}
-			
+
 			logger.log(Level.FINE,
 				"add: " + add + " " +
 				"update: " + upd + " " +
@@ -375,32 +411,32 @@ public class UpdateEngine
 				"keep: " + noop);
 		}
 	}
-	
+
 	/**
 	 * Initializes a resource set for a client-side ZipFile
 	 * by creating Resource intances for every ZipEntry.
-	 * 
+	 *
 	 * Note: The resource set returned is in the same order as
 	 * 		 the ZIP entries in the ZIP file. The ordering must
 	 * 		 not be changed or the InputStreams to the ZIP
 	 * 		 entries are invalidated˙
-	 * 
+	 *
 	 * @param archive	the ZIP file to create a resource set for
-	 * @return			
+	 * @return
 	 */
 	private Set<Resource> init(ZipFile archive)
 	{
 		assert archive != null;
-		
+
 		Set<Resource> patchSet = new LinkedHashSet<Resource>();
-		
+
 		for (Enumeration<? extends ZipEntry> entries = archive.entries(); entries.hasMoreElements();)
 		{
 			ZipEntry entry = entries.nextElement();
-			
+
 			Resource resource = new Resource(entry.getName());
 			resource.setCrc(entry.getCrc());
-			
+
 			try
 			{
 				resource.setData(archive.getInputStream(entry));
@@ -409,18 +445,18 @@ public class UpdateEngine
 			{
 				throw new RuntimeException("Unable to open stream to " + entry.getName());
 			}
-			
+
 			patchSet.add(resource);
 		}
-		
+
 		return patchSet;
 	}
-	
+
 	/**
 	 * Creates a diff from two resource sets with instructions to update
 	 * the resource set given as first parameter to the resource set
 	 * given as second.
-	 * 
+	 *
 	 * @param client	the resource set to be updated
 	 * @param server	the "reference" resource set to be updated to
 	 * @return
@@ -428,7 +464,7 @@ public class UpdateEngine
 	private Map<Resource, String> diff(Set<Resource> client, Set<Resource> server)
 	{
 		Map<Resource, String> diff = new HashMap<Resource, String>(client.size());
-		
+
 		/*
 		 * Populate diff with all client resource flagged REMOVE.
 		 */
@@ -436,7 +472,7 @@ public class UpdateEngine
 		{
 			diff.put(resource, Resource.FLAG_REMOVE);
 		}
-		
+
 		/*
 		 * Loop over all server resources and diff them with the
 		 * client resources to get the patch information we need.
@@ -444,7 +480,7 @@ public class UpdateEngine
 		for(Resource serverResource : server)
 		{
 			String name = serverResource.getName();
-			
+
 			Resource clientResource = null;
 			for(Resource _clientResource : client)
 			{
@@ -454,7 +490,7 @@ public class UpdateEngine
 					break;
 				}
 			}
-			
+
 			if(clientResource == null)
 			{
 				/*
@@ -466,7 +502,7 @@ public class UpdateEngine
 			{
 				long serverCRC = serverResource.getCrc();
 				long clientCRC = clientResource.getCrc();
-				
+
 				if(serverCRC == clientCRC)
 				{
 					/*
@@ -474,7 +510,7 @@ public class UpdateEngine
 					 * Remove it from the diff because only differences go
 					 * in here; this also keeps the diff small speeding up
 					 * lookups and allows patching to fail fast if nothing
-					 * needs to be patched. 
+					 * needs to be patched.
 					 */
 					diff.remove(clientResource);
 				}
@@ -487,13 +523,13 @@ public class UpdateEngine
 				}
 			}
 		}
-		
+
 		return diff;
 	}
-	
+
 	/**
 	 * Patches a ZipFile from an UpdateLocation using the specified diff.
-	 * 
+	 *
 	 * @param archive	ZIP file to be updated
 	 * @param diff		diff containing update instructions
 	 * @param location	location from which the ZIP file is to be updated
@@ -508,11 +544,11 @@ public class UpdateEngine
 		 */
 		if(diff.size() < 1)
 			return false;
-		
+
 		/*
 		 * For compatibility with JAR files, the first entry needs
 		 * to be the manifest file (if it exists).
-		 * 
+		 *
 		 * As both sources, the local file and the downloaded resources,
 		 * use the same ordering one of them will always start with the
 		 * manifest entry. So we just need to figure out which one it is
@@ -520,7 +556,7 @@ public class UpdateEngine
 		 */
 		final String MANIFEST = "META-INF/MANIFEST.MF";
 		boolean remoteFirst = false;
-		
+
 		for(Resource resource : diff.keySet())
 		{
 			String name = resource.getName();
@@ -531,37 +567,37 @@ public class UpdateEngine
 				break;
 			}
 		}
-		
+
 		/*
 		 * Create a tmp file in the same directory as they original
-		 * file so that it can be quickly renamed after patching. 
+		 * file so that it can be quickly renamed after patching.
 		 */
 		File tmpFile = new File(archive.getName() + ".tmp");
 		if(!tmpFile.delete() && tmpFile.exists())
 		{
 			throw new IOException("Failed to delete existing tmp file: " + tmpFile);
 		}
-		
+
 		ZipOutputStream zipFile = new ZipOutputStream(
 			new FileOutputStream(tmpFile));
-		
+
 		/*
 		 * Fetch any resources that need to be updated/added
 		 */
 		location.fetchData(diff);
-		
+
 		Iterator<Resource> serverResources = location.getData(diff);
-		
+
 		/*
 		 * Init progress listeners for patching
 		 */
 		int items = archive.size()+diff.size();
 		listeners.init("Patching...", 0, items);
-		
+
 		logger.log(Level.FINE, "Starting to patch...");
-		
+
 		/*
-		 * Start patching 
+		 * Start patching
 		 */
 		if(remoteFirst)
 		{
@@ -575,24 +611,24 @@ public class UpdateEngine
 			patchLocally(zipFile, diff, archive);
 			patchRemotely(zipFile, diff, serverResources);
 		}
-		
+
 		logger.log(Level.FINE, "Finalizing patched file...");
 		listeners.init("Finalizing...");
-		
+
 		zipFile.close();
-		
+
 		/*
 		 * Close archive or the renaming below will fail!
 		 */
 		archive.close();
-		
+
 		logger.log(Level.FINE, "Finalized patched file.");
-		
+
 		File originalFile = new File(archive.getName());
 		File backupFile = new File(archive.getName() + ".bck");
-		
+
 		logger.log(Level.FINE, "Replacing original by patched file...");
-		
+
 		if(originalFile.renameTo(backupFile))
 		{
 			if(tmpFile.renameTo(originalFile))
@@ -609,14 +645,14 @@ public class UpdateEngine
 		{
 			throw new IOException("Failed to backup original file: " + originalFile);
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Copies or skips entries from original ZIP file
 	 * to satisfy any NOOP or REMOVE instructions.
-	 * 
+	 *
 	 * @param zipFile	stream to patched ZIP file
 	 * @param diff		diff containing update information
 	 * @param archive	the original archive to be copied from
@@ -626,18 +662,18 @@ public class UpdateEngine
 		throws IOException
 	{
 		logger.log(Level.FINER, "Patching with local resources...");
-		
+
 		byte[] buf = new byte[4096];
-		
+
 		Enumeration<? extends ZipEntry> entries = archive.entries();
 		while(entries.hasMoreElements())
 		{
 			ZipEntry entry = entries.nextElement();
-			
+
 			String name = entry.getName();
-			
+
 			listeners.update(listeners.getProgress()+1);
-			
+
 			/*
 			 * Not the fastest way to look up how a
 			 * Resource is flagged but good enough.
@@ -651,7 +687,7 @@ public class UpdateEngine
 					break;
 				}
 			}
-			
+
 			if(Resource.FLAG_REMOVE.equals(flag))
 			{
 				logger.log(Level.FINEST, "\t--- " + name);
@@ -660,27 +696,27 @@ public class UpdateEngine
 			else if(Resource.FLAG_NOOP.equals(flag))
 			{
 				logger.log(Level.FINEST, "\t=== " + name);
-				
+
 				zipFile.putNextEntry(new ZipEntry(name));
-				
+
 				BufferedInputStream in = new BufferedInputStream(archive.getInputStream(entry));
-				
+
 				int len;
 				while((len = in.read(buf)) != -1)
 				{
 					zipFile.write(buf, 0, len);
 				}
-				
+
 				zipFile.closeEntry();
 				in.close();
 			}
 		}
 	}
-	
+
 	/**
 	 * Downloads and add any resources from the server
 	 * to satisfy any ADD or UPDATE instructions.
-	 * 
+	 *
 	 * @param zipFile	stream to patched ZIP file
 	 * @param diff		diff containing update information
 	 * @param location	location to download new/updated data from
@@ -694,47 +730,47 @@ public class UpdateEngine
 			logger.log(Level.FINE, "No patching with remote resources required.");
 			return;
 		}
-		
+
 		logger.log(Level.FINER, "Patching with remote resources...");
-		
+
 		byte[] buf = new byte[4096];
 		while(serverResources.hasNext())
 		{
 			Resource resource = serverResources.next();
 			String name = resource.getName();
-			
+
 			logger.log(Level.FINEST, "\t+++/!!! " + name);
-			
+
 			listeners.update(listeners.getProgress()+1);
-			
+
 			ZipEntry entry = new ZipEntry(name);
 			zipFile.putNextEntry(entry);
-			
+
 			BufferedInputStream in = new BufferedInputStream(resource.getData());
-			
+
 			int len;
 			while((len = in.read(buf)) != -1)
 			{
 				zipFile.write(buf, 0, len);
 			}
-			
+
 			zipFile.closeEntry();
-			
+
 			in.close();
 		}
 	}
-	
+
 	/*
 	 * ---
 	 * Utility methods for timing
 	 */
 	private static long startTime;
-	
+
 	private static void startTimer()
 	{
 		startTime = System.currentTimeMillis();
 	}
-	
+
 	private static long stopTimer()
 	{
 		assert startTime != 0 : "Called stopTimer() before startTimer()";
@@ -743,8 +779,8 @@ public class UpdateEngine
 		return time;
 	}
 	/* ---
-	 */	
-	
+	 */
+
 	/**
 	 * Registers a ProgressListener with this instance of an UpdateEngine.
 	 */
@@ -759,10 +795,10 @@ public class UpdateEngine
 		{
 			multiListeners.add(((MultiProgressListener)listener).getOverallProgressListener());
 		}
-			
+
 		listeners.add(listener);
 	}
-	
+
 	/**
 	 * Unregisters a ProgressListener with this instance of an UpdateEngine.
 	 */
@@ -777,7 +813,7 @@ public class UpdateEngine
 		{
 			multiListeners.remove(((MultiProgressListener)listener).getOverallProgressListener());
 		}
-		
+
 		listeners.remove(listener);
 	}
 }
