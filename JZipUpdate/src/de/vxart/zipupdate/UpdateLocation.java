@@ -46,11 +46,18 @@ import de.vxart.io.ZipEntryInputStream;
 import de.vxart.net.MultipartMessage;
 
 /**
- * Encapsulates an URL-based location which holds the up-to-date version
- * of an archive and provides the fine-grained access functionality to a
- * remote archive's contents.
+ * Encapsulates an URL-based location which holds the up-to-date version of an
+ * archive and provides the fine-grained access functionality to a remote
+ * archive's contents.<br>
+ * Use the <code>de.vxart.zipupdate.UpdateLocation.downloadSpeed</code> system
+ * property to define the maximum download speed in KB per second. By default
+ * there is no maximum download speed.<br>
+ * Use the <code>de.vxart.zipupdate.UpdateLocation.bufferSize</code> system
+ * property to define the size of the buffer to use for the
+ * {@link BufferedInputStream }. By default the buffer size is 8192 Bytes.
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
+ * @author Egal, egal (AT) mojang (DOT) com
  */
 public class UpdateLocation
 {
@@ -70,7 +77,8 @@ public class UpdateLocation
 
 	private final Map<String, Range> namedRanges;
 	final Map<String, String> rangedNames;
-
+    /** Buffer size for {@link BufferedInputStream }. The default is 8192. */
+    private int bufferSize = 8192;
 
 	/**
 	 * Creates a new UpdateLocation sourced from the specified URL.
@@ -81,21 +89,45 @@ public class UpdateLocation
 	{
 		this.url = url;
 
-		try
-		{
-			String prop = System.getProperty("de.vxart.zipupdate.UpdateLocation.downloadSpeed");
-			DOWNLOAD_SPEED = Long.parseLong(prop);
+        try
+        {
+            String prop = System.getProperty("de.vxart.zipupdate.UpdateLocation.downloadSpeed", "-1");
+            DOWNLOAD_SPEED = Long.parseLong(prop);
 
-			if(DOWNLOAD_SPEED < 0)
-				throw new IllegalAccessException("Illegal value: " + prop);
+            if(DOWNLOAD_SPEED < -1)
+            {
+                throw new IllegalArgumentException("Illegal value for de.vxart.zipupdate.UpdateLocation.downloadSpeed: " + prop);
+            }
+            else if (DOWNLOAD_SPEED == -1 || DOWNLOAD_SPEED == 0)
+            {
+                logger.log(Level.CONFIG, "Disabling throttling");
+                DOWNLOAD_SPEED = -1;
+            }
+            else if(DOWNLOAD_SPEED > -1)
+            {
+                logger.log(Level.CONFIG, "Enabling throttling: " + DOWNLOAD_SPEED + " KB/s max");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.log(Level.CONFIG, "Disabling throttling: ", ex);
+            DOWNLOAD_SPEED = -1;
+        }
 
-			logger.log(Level.CONFIG, "Enabling throttling: " + DOWNLOAD_SPEED + " KB/s max");
-		}
-		catch (Exception ex)
-		{
-			logger.log(Level.CONFIG, "Disabling throttling: " + ex.getMessage());
-			DOWNLOAD_SPEED = -1;
-		}
+        try
+        {
+            String prop = System.getProperty("de.vxart.zipupdate.UpdateLocation.bufferSize", String.valueOf(8192));
+            bufferSize = Integer.parseInt(prop);
+
+            if(bufferSize < 0)
+                throw new IllegalArgumentException("Illegal value for de.vxart.zipupdate.UpdateLocation.bufferSize: " + prop);
+
+            logger.log(Level.CONFIG, "Setting download buffer size to: " + bufferSize + " bytes");
+        }
+        catch (Exception ex)
+        {
+            logger.log(Level.CONFIG, "Using default download buffer size of : " + bufferSize + " bytes - ", ex);
+        }
 
 		this.listeners = new ProgressListenerManager();
 		this.cache = new HashMap<Map<Resource, String>, CacheEntry>();
@@ -128,7 +160,7 @@ public class UpdateLocation
 			new CheckedInputStream(
 				new InflaterInputStream(
 					new BufferedInputStream(
-						new URL(url.toString() + ".idx").openStream()
+						new URL(url.toString() + ".idx").openStream(), bufferSize
 					)
 				), checker)
 			);
