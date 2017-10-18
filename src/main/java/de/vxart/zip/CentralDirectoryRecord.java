@@ -15,6 +15,8 @@
  */
 package de.vxart.zip;
 
+import java.nio.ByteBuffer;
+
 import static de.vxart.zip.ZipConstants.CENTRAL_DIRECTORY;
 import static de.vxart.zip.ZipConstants.CENTRAL_DIRECTORY_LENGTH;
 
@@ -24,22 +26,22 @@ import static de.vxart.zip.ZipConstants.CENTRAL_DIRECTORY_LENGTH;
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class CentralDirectoryRecord extends ZipHeader {
-    public short versionMadeBy;
-    public short versionNeededToExtract;
-    public short flag;
-    public short compressionMethod;
-    public short lastModificationTime;
-    public short lastModificationDate;
-    public long crc;
-    public long compressedSize;
-    public long uncompressedSize;
-    public short nameLength;
-    public short extraLength;
-    public short fileCommentLength;
-    public short startDiskNumber;
-    public short internalFileAttributes;
-    public int externalFileAttributes;
-    public int offsetToLocalFileHeader;
+    public final short versionMadeBy;
+    public final short versionNeededToExtract;
+    public final short flag;
+    public final short compressionMethod;
+    public final short lastModificationTime;
+    public final short lastModificationDate;
+    public final long crc;
+    public final long compressedSize;
+    public final long uncompressedSize;
+    public final short nameLength;
+    public final short extraLength;
+    public final short fileCommentLength;
+    public final short startDiskNumber;
+    public final short internalFileAttributes;
+    public final int externalFileAttributes;
+    public final int offsetToLocalFileHeader;
 
 
     /**
@@ -48,8 +50,9 @@ public class CentralDirectoryRecord extends ZipHeader {
      * @param bytes a byte array containing a valid CDR block
      */
     public CentralDirectoryRecord(byte[] bytes) {
-        super(CENTRAL_DIRECTORY, CENTRAL_DIRECTORY_LENGTH, bytes);
+        super(CENTRAL_DIRECTORY, CENTRAL_DIRECTORY_LENGTH);
 
+        ByteBuffer buffer = parse(bytes);
         versionMadeBy = buffer.getShort();
         versionNeededToExtract = buffer.getShort();
         flag = buffer.getShort();

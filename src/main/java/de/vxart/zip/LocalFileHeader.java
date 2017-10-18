@@ -15,6 +15,8 @@
  */
 package de.vxart.zip;
 
+import java.nio.ByteBuffer;
+
 import static de.vxart.zip.ZipConstants.LOCAL_FILE_HEADER;
 import static de.vxart.zip.ZipConstants.LOCAL_FILE_HEADER_LENGTH;
 
@@ -24,16 +26,16 @@ import static de.vxart.zip.ZipConstants.LOCAL_FILE_HEADER_LENGTH;
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class LocalFileHeader extends ZipHeader {
-    public short versionNeededToExtract;
-    public short flag;
-    public short compressionMethod;
-    public short lastModificationTime;
-    public short lastModificationDate;
-    public long compressedSize;
-    public long uncompressedSize;
-    public long crc;
-    public int nameLength;
-    public int extraLength;
+    public final short versionNeededToExtract;
+    public final short flag;
+    public final short compressionMethod;
+    public final short lastModificationTime;
+    public final short lastModificationDate;
+    public final long compressedSize;
+    public final long uncompressedSize;
+    public final long crc;
+    public final int nameLength;
+    public final int extraLength;
 
 
     /**
@@ -42,8 +44,9 @@ public class LocalFileHeader extends ZipHeader {
      * @param bytes a byte array containing a valid LFH block
      */
     public LocalFileHeader(byte[] bytes) {
-        super(LOCAL_FILE_HEADER, LOCAL_FILE_HEADER_LENGTH, bytes);
+        super(LOCAL_FILE_HEADER, LOCAL_FILE_HEADER_LENGTH);
 
+        ByteBuffer buffer = parse(bytes);
         versionNeededToExtract = buffer.getShort();
         flag = buffer.getShort();
         compressionMethod = buffer.getShort();

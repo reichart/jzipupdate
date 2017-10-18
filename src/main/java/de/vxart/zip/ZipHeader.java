@@ -15,9 +15,6 @@
  */
 package de.vxart.zip;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -28,10 +25,8 @@ import java.nio.ByteOrder;
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public abstract class ZipHeader {
-    public int signature;
-    public int size;
-    protected ByteBuffer buffer;
-
+    public final int signature;
+    public final int size;
 
     /**
      * Creates a new header with the given signature and size
@@ -39,53 +34,16 @@ public abstract class ZipHeader {
      *
      * @param signature the required signature/magical number for the header
      * @param size      the required size for the header
-     * @param bytes     the bytes containing the actual header data
      */
-    protected ZipHeader(int signature, int size, byte[] bytes) {
+    protected ZipHeader(int signature, int size) {
         this.signature = signature;
         this.size = size;
-        init(bytes);
-    }
-
-    /**
-     * Creates a new header with the given signature and size
-     * initialized to data read from the InputStream.
-     *
-     * @param signature the required signature/magical number for the header
-     * @param size      the required size for the header
-     * @param bytes     a stream contain the actual header data
-     */
-    protected ZipHeader(int signature, int size, InputStream in)
-            throws IOException {
-        this.signature = signature;
-        this.size = size;
-        init(in);
-    }
-
-    /*
-     * Initializes this header from an InputStream.
-     */
-    private void init(InputStream in)
-            throws IOException {
-        byte[] bytes = new byte[size];
-
-        int n = 0;
-        do {
-            int count = in.read(bytes, n, size - n);
-
-            if (count < 0)
-                throw new EOFException();
-
-            n += count;
-        } while (n < size);
-
-        init(bytes);
     }
 
     /*
      * Initializes this header from a byte array.
      */
-    private void init(byte[] bytes) {
+    protected ByteBuffer parse(byte[] bytes) {
         if (bytes.length != size) {
             throw new IllegalArgumentException(
                     "Data for " + getClass().getName() + " has to be " +
@@ -96,7 +54,7 @@ public abstract class ZipHeader {
          * Wrap the bytes into a buffer to easily
 		 * get at the multi-bytes values we need.
 		 */
-        buffer = ByteBuffer.wrap(bytes);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
         int actualSignature = buffer.getInt();
@@ -108,6 +66,8 @@ public abstract class ZipHeader {
                             hex(signature) + ": " +
                             hex(actualSignature));
         }
+
+        return buffer.asReadOnlyBuffer();
     }
 
     /**
@@ -117,7 +77,7 @@ public abstract class ZipHeader {
      * @param i the integer to turn into a hex string
      * @return a nicely formatted hex string
      */
-    protected String hex(int i) {
+    protected static String hex(int i) {
         return "0x" + Integer.toHexString(i);
     }
 
@@ -125,10 +85,10 @@ public abstract class ZipHeader {
      * Turns an long into a nicely formatted
      * hex string of the form 0x123ABC.
      *
-     * @param i the long to turn into a hex string
+     * @param l the long to turn into a hex string
      * @return a nicely formatted hex string
      */
-    protected String hex(long l) {
+    protected static String hex(long l) {
         return "0x" + Long.toHexString(l);
     }
 }

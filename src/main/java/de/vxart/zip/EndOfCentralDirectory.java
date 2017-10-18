@@ -15,6 +15,8 @@
  */
 package de.vxart.zip;
 
+import java.nio.ByteBuffer;
+
 import static de.vxart.zip.ZipConstants.END_OF_CENTRAL_DIRECTORY;
 import static de.vxart.zip.ZipConstants.END_OF_CENTRAL_DIRECTORY_LENGTH;
 
@@ -25,13 +27,13 @@ import static de.vxart.zip.ZipConstants.END_OF_CENTRAL_DIRECTORY_LENGTH;
  */
 public class EndOfCentralDirectory extends ZipHeader {
 
-    public short currentDiskNumber;
-    public short cdStartDiskNumber;
-    public short centralDirectoryRecordsThisDisk;
-    public short centralDirectoryRecordsAllDisks;
-    public int centralDirectorySize;
-    public int centralDirectoryOffset;
-    public short commentLength;
+    public final short currentDiskNumber;
+    public final short cdStartDiskNumber;
+    public final short centralDirectoryRecordsThisDisk;
+    public final short centralDirectoryRecordsAllDisks;
+    public final int centralDirectorySize;
+    public final int centralDirectoryOffset;
+    public final short commentLength;
 
 
     /**
@@ -40,8 +42,9 @@ public class EndOfCentralDirectory extends ZipHeader {
      * @param bytes a byte array containing a valid ECD block
      */
     public EndOfCentralDirectory(byte[] bytes) {
-        super(END_OF_CENTRAL_DIRECTORY, END_OF_CENTRAL_DIRECTORY_LENGTH, bytes);
+        super(END_OF_CENTRAL_DIRECTORY, END_OF_CENTRAL_DIRECTORY_LENGTH);
 
+        ByteBuffer buffer = parse(bytes);
         currentDiskNumber = buffer.getShort();
         cdStartDiskNumber = buffer.getShort();
         centralDirectoryRecordsThisDisk = buffer.getShort();
