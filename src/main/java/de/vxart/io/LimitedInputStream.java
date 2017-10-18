@@ -43,23 +43,10 @@ public class LimitedInputStream extends FilterInputStream {
     }
 
     /**
-     * Returns the number of bytes already read from this stream.
-     *
-     * @return the number of bytes read from this stream
+     * Returns the number of bytes remaining before the limit of this stream.
      */
-    public long getBytesRead() {
-        return bytesRead;
-    }
-
-    /**
-     * Returns the number of bytes remaining before the limit
-     * of this stream.
-     *
-     * @return the number of bytes remaining before the limit
-     */
-    public long getBytesRemaining() {
-        long rem = limit - bytesRead;
-        return rem;
+    private long getBytesRemaining() {
+        return limit - bytesRead;
     }
 
     @Override

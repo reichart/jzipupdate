@@ -55,11 +55,9 @@ public class Indexer {
         if (input.isFile()) {
             index(input);
         } else if (input.isDirectory()) {
-            File[] files = input.listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    name = name.toLowerCase();
-                    return name.endsWith(".zip") || name.endsWith(".jar");
-                }
+            File[] files = input.listFiles((dir, name) -> {
+                name = name.toLowerCase();
+                return name.endsWith(".zip") || name.endsWith(".jar");
             });
 
             if (files.length < 1) {
@@ -113,7 +111,7 @@ public class Indexer {
         for (Resource entry : entries.keySet()) {
             String name = entry.getName();
             long crc = entry.getCrc();
-            long endOffset = entries.get(entry).longValue();
+            long endOffset = entries.get(entry);
 
 			/*
             System.out.println(
@@ -187,7 +185,7 @@ public class Indexer {
 		 * **insertion order** because we rely on it for computing
 		 * the start offset on the client later on!
 		 */
-        Map<Resource, Long> entries = new LinkedHashMap<Resource, Long>();
+        Map<Resource, Long> entries = new LinkedHashMap<>();
 
         Resource resource = null;
 
@@ -214,7 +212,7 @@ public class Indexer {
 			 * per resource.
 			 */
             if (resource != null) {
-                entries.put(resource, Long.valueOf(header.offsetToLocalFileHeader - 1));
+                entries.put(resource, header.offsetToLocalFileHeader - 1L);
             }
 
             resource = new Resource(name);
@@ -225,7 +223,7 @@ public class Indexer {
 		 * Don't forget the last resource!
 		 */
         if (resource != null) {
-            entries.put(resource, Long.valueOf(eocd.centralDirectoryOffset - 1));
+            entries.put(resource, eocd.centralDirectoryOffset - 1L);
         }
 
         return entries;

@@ -18,11 +18,23 @@ package de.vxart.zipupdate;
 import de.vxart.zipupdate.ui.MultiProgressDialog;
 import de.vxart.zipupdate.ui.ProgressDialog;
 
-import javax.swing.*;
-import java.io.*;
+import javax.swing.UIManager;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
-import java.util.*;
-import java.util.logging.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -104,7 +116,7 @@ public class UpdateEngine {
         }
 
 	    /*
-	     * Parse arguments
+         * Parse arguments
 	     */
         File input = new File(args[0]);
 
@@ -126,11 +138,9 @@ public class UpdateEngine {
 			 * Filter out anything but ZIP and JAR files
 			 */
             File[] files = input.listFiles(
-                    new FilenameFilter() {
-                        public boolean accept(File dir, String name) {
-                            name = name.toLowerCase();
-                            return name.endsWith(".zip") || name.endsWith(".jar");
-                        }
+                    (dir, name) -> {
+                        name = name.toLowerCase();
+                        return name.endsWith(".zip") || name.endsWith(".jar");
                     });
 
             if (files.length < 1) {
@@ -248,12 +258,9 @@ public class UpdateEngine {
 
 		/*
 		 * Register any listeners on the UpdateLocation as well.
-		 *
-		 * TODO Why won't a simplified for(Foo f : Bar) work here?!
 		 */
-        Iterator<ProgressListener> it = listeners.iterator();
-        while (it.hasNext()) {
-            location.addProgressListener(it.next());
+        for (ProgressListener listener : listeners) {
+            location.addProgressListener(listener);
         }
 
         listeners.init("Initializing...");
@@ -362,7 +369,7 @@ public class UpdateEngine {
     private Set<Resource> init(ZipFile archive) {
         assert archive != null;
 
-        Set<Resource> patchSet = new LinkedHashSet<Resource>();
+        Set<Resource> patchSet = new LinkedHashSet<>();
 
         for (Enumeration<? extends ZipEntry> entries = archive.entries(); entries.hasMoreElements(); ) {
             ZipEntry entry = entries.nextElement();
@@ -392,7 +399,7 @@ public class UpdateEngine {
      * @return
      */
     private Map<Resource, String> diff(Set<Resource> client, Set<Resource> server) {
-        Map<Resource, String> diff = new HashMap<Resource, String>(client.size());
+        Map<Resource, String> diff = new HashMap<>(client.size());
 
 		/*
 		 * Populate diff with all client resource flagged REMOVE.
@@ -452,8 +459,8 @@ public class UpdateEngine {
      * @param archive  ZIP file to be updated
      * @param diff     diff containing update instructions
      * @param location location from which the ZIP file is to be updated
-     * @throws IOException if any IO error occured during downloading, parsing or patching
      * @return true if the ZIP file has been patched, false if nothing has been done (i.e. file is up to date)
+     * @throws IOException if any IO error occured during downloading, parsing or patching
      */
     private boolean patch(ZipFile archive, Map<Resource, String> diff, UpdateLocation location)
             throws IOException {
@@ -592,7 +599,6 @@ public class UpdateEngine {
 
             if (Resource.FLAG_REMOVE.equals(flag)) {
                 logger.log(Level.FINEST, "\t--- " + name);
-                continue;
             } else if (Resource.FLAG_NOOP.equals(flag)) {
                 logger.log(Level.FINEST, "\t=== " + name);
 
@@ -615,9 +621,9 @@ public class UpdateEngine {
      * Downloads and add any resources from the server
      * to satisfy any ADD or UPDATE instructions.
      *
-     * @param zipFile  stream to patched ZIP file
-     * @param diff     diff containing update information
-     * @param location location to download new/updated data from
+     * @param zipFile         stream to patched ZIP file
+     * @param diff            diff containing update information
+     * @param serverResources resources to download new/updated data from
      * @throws IOException
      */
     private void patchRemotely(ZipOutputStream zipFile, Map<Resource, String> diff, Iterator<Resource> serverResources)

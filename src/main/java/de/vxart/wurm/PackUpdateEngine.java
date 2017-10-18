@@ -12,7 +12,6 @@ import de.vxart.zipupdate.UpdateLocation;
 import de.vxart.zipupdate.ui.MultiProgressDialog;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -47,11 +46,9 @@ public class PackUpdateEngine {
             files = new File[1];
             files[0] = input;
         } else if (input.isDirectory()) {
-            files = input.listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    name = name.toLowerCase();
-                    return name.endsWith(".zip") || name.endsWith(".jar");
-                }
+            files = input.listFiles((dir, name) -> {
+                name = name.toLowerCase();
+                return name.endsWith(".zip") || name.endsWith(".jar");
             });
         } else {
             logger.log(Level.WARNING, "Neither directory nor ZIP/JAR file: " + input);

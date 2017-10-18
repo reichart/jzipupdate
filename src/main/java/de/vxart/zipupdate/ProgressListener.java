@@ -25,14 +25,14 @@ public interface ProgressListener {
      * <p>
      * Indeterminate mode is used for tasks of unknown length.
      */
-    public void init(String message);
+    void init(String message);
 
     /**
      * Sets or resets this listener to determinate
      * mode using the specified message, minimum and
      * maximum values.
      */
-    public void init(String message, int min, int max);
+    void init(String message, int min, int max);
 
     /**
      * Updates the progress to the specified value.
@@ -43,25 +43,25 @@ public interface ProgressListener {
      *
      * @param progress the new progress value
      */
-    public void update(int progress);
+    void update(int progress);
 
     /**
      * Returns the latest value set by the update method.
      *
      * @return the current progress value
      */
-    public int getProgress();
+    int getProgress();
 
     /**
      * Labels the current task with the specified string.
      *
      * @param label a label describing the current task
      */
-    public void label(String label);
+    void label(String label);
 
     /**
      * Finishes the display of progress by a progress listener,
      * e.g. by closing a progress dialog.
      */
-    public void finish();
+    void finish();
 }

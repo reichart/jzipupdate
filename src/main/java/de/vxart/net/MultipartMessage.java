@@ -78,7 +78,7 @@ public class MultipartMessage
      */
     private long getDataSize(Map<String, String> headers)
             throws IOException {
-        long size = -1;
+        long size;
 
         String contentLength = headers.get(CONTENT_LENGTH);
         if (contentLength == null) {
@@ -230,7 +230,7 @@ public class MultipartMessage
 			/*
 			 * Parse any headers for this part
 			 */
-            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, String> headers = new HashMap<>();
 
             String line;
             while (!(line = readLine()).equals("")) {

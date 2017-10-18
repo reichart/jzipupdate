@@ -104,10 +104,10 @@ public class UpdateLocation {
         }
 
         this.listeners = new ProgressListenerManager();
-        this.cache = new HashMap<Map<Resource, String>, CacheEntry>();
-        this.namedRanges = new HashMap<String, Range>();
-        this.rangedNames = new HashMap<String, String>();
-        this.resources = new LinkedHashSet<Resource>();
+        this.cache = new HashMap<>();
+        this.namedRanges = new HashMap<>();
+        this.rangedNames = new HashMap<>();
+        this.resources = new LinkedHashSet<>();
     }
 
     public URL getUrl() {
@@ -204,7 +204,7 @@ public class UpdateLocation {
 		 *    it has to do only forward-seeking in the ZIP file (no jumping
 		 *    around to provide the ranges).
 		 */
-        SortedSet<Range> sortedRanges = new TreeSet<Range>();
+        SortedSet<Range> sortedRanges = new TreeSet<>();
         for (Resource resource : diff.keySet()) {
             String flag = diff.get(resource);
             if (flag == Resource.FLAG_ADD || flag == Resource.FLAG_UPDATE)
@@ -258,9 +258,7 @@ public class UpdateLocation {
         } catch (IOException e) {
             logger.log(Level.INFO, "IOException while connecting to source: " + url + " , " + e.getMessage());
             final Map<String, List<String>> lHeaderFields = conn.getHeaderFields();
-            final Iterator<String> lHeaders = lHeaderFields.keySet().iterator();
-            while (lHeaders.hasNext()) {
-                Object lHeaderObject = lHeaders.next();
+            for (String lHeaderObject : lHeaderFields.keySet()) {
                 logger.log(Level.INFO, "HTTPResponseHeader - " + lHeaderObject + ": " + lHeaderFields.get(lHeaderObject));
             }
             throw e;
@@ -331,7 +329,7 @@ public class UpdateLocation {
 			/*
 			 * Ugly but it works ;)
 			 */
-            InputStream data = null;
+            InputStream data;
 
             try {
                 data = new ZipEntryInputStream(new DataInputStream(input));
@@ -342,7 +340,7 @@ public class UpdateLocation {
             Resource resource = new Resource(diff.keySet().iterator().next().getName());
             resource.setData(data);
 
-            List<Resource> list = new LinkedList<Resource>();
+            List<Resource> list = new LinkedList<>();
             list.add(resource);
 
             return list.iterator();
@@ -374,7 +372,7 @@ public class UpdateLocation {
 
                 String name = rangedNames.get(range);
 
-                InputStream data = null;
+                InputStream data;
 
                 try {
                     data = new ZipEntryInputStream(
@@ -409,7 +407,7 @@ public class UpdateLocation {
             throw new NullPointerException("No boundary was found.");
         }
 
-        String boundary = null;
+        String boundary;
 
         /*
 		 * Look for a charset component following the boundary

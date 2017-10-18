@@ -29,7 +29,7 @@ public class ProgressListenerManager implements ProgressListener, Iterable<Progr
 
 
     public ProgressListenerManager() {
-        this.listeners = new LinkedList<ProgressListener>();
+        this.listeners = new LinkedList<>();
     }
 
     public void add(ProgressListener listener) {

@@ -141,7 +141,7 @@ public class ProgressPanel extends Box implements ProgressListener {
     }
 
     private static String getFormattedTime(long seconds) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         long minutes = seconds / 60;
         if (minutes > 0) {
@@ -160,9 +160,8 @@ public class ProgressPanel extends Box implements ProgressListener {
         return progressBar.getValue();
     }
 
-    public void finish() {
-        return;
-    }
+    @Override
+    public void finish() {}
 
     public boolean isSpeedShown() {
         return speedShown;
