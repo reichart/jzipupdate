@@ -24,90 +24,73 @@ import java.util.List;
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class ProgressListenerManager implements ProgressListener, Iterable<ProgressListener>
-{
-	private List<ProgressListener> listeners;
+public class ProgressListenerManager implements ProgressListener, Iterable<ProgressListener> {
+    private List<ProgressListener> listeners;
 
 
-	public ProgressListenerManager()
-	{
-		this.listeners = new LinkedList<ProgressListener>();
-	}
+    public ProgressListenerManager() {
+        this.listeners = new LinkedList<ProgressListener>();
+    }
 
-	public void add(ProgressListener listener)
-	{
-		listeners.add(listener);
-	}
+    public void add(ProgressListener listener) {
+        listeners.add(listener);
+    }
 
-	public void remove(ProgressListener listener)
-	{
-		listeners.remove(listener);
-	}
+    public void remove(ProgressListener listener) {
+        listeners.remove(listener);
+    }
 
-	public void init(String message)
-	{
-		for(ProgressListener listener : listeners)
-		{
-			listener.init(message);
-		}
-	}
+    public void init(String message) {
+        for (ProgressListener listener : listeners) {
+            listener.init(message);
+        }
+    }
 
-	public void init(String message, int min, int max)
-	{
-		for(ProgressListener listener : listeners)
-		{
-			listener.init(message, min, max);
-		}
-	}
+    public void init(String message, int min, int max) {
+        for (ProgressListener listener : listeners) {
+            listener.init(message, min, max);
+        }
+    }
 
-	public void update(int progress)
-	{
-		for(ProgressListener listener : listeners)
-		{
-			listener.update(progress);
-		}
-	}
+    public void update(int progress) {
+        for (ProgressListener listener : listeners) {
+            listener.update(progress);
+        }
+    }
 
-	public void label(String label)
-	{
-		for(ProgressListener listener : listeners)
-		{
-			listener.label(label);
-		}
-	}
+    public void label(String label) {
+        for (ProgressListener listener : listeners) {
+            listener.label(label);
+        }
+    }
 
-	public void finish()
-	{
-		for(ProgressListener listener : listeners)
-		{
-			listener.finish();
-		}
-	}
+    public void finish() {
+        for (ProgressListener listener : listeners) {
+            listener.finish();
+        }
+    }
 
-	/**
-	 * Returns and Iterator over all ProgressListeners
-	 * registered with this manager.
-	 */
-	public Iterator<ProgressListener> iterator()
-	{
-		return listeners.iterator();
-	}
+    /**
+     * Returns and Iterator over all ProgressListeners
+     * registered with this manager.
+     */
+    public Iterator<ProgressListener> iterator() {
+        return listeners.iterator();
+    }
 
-	/**
-	 * Returns the progress from the first registered listeners.
-	 */
-	public int getProgress()
-	{
-		return listeners.get(0).getProgress();
-	}
+    /**
+     * Returns the progress from the first registered listeners.
+     */
+    public int getProgress() {
+        return listeners.get(0).getProgress();
+    }
 
-	/**
-	 * Returns the number of ProgressListener registered with this manager.
-	 *
-	 * @return the number of ProgressListener in this manager.
-	 */
-	public int size()
-	{
-		return listeners.size();
-	}
+    /**
+     * Returns the number of ProgressListener registered with this manager.
+     *
+     * @return the number of ProgressListener in this manager.
+     */
+    public int size() {
+        return listeners.size();
+    }
 }

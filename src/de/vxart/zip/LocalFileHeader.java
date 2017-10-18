@@ -23,62 +23,59 @@ import static de.vxart.zip.ZipConstants.LOCAL_FILE_HEADER_LENGTH;
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class LocalFileHeader extends ZipHeader
-{
-	public short versionNeededToExtract;
-	public short flag;
-	public short compressionMethod;
-	public short lastModificationTime;
-	public short lastModificationDate;
-	public long compressedSize;
-	public long uncompressedSize;
-	public long crc;
-	public int nameLength;
-	public int extraLength;
+public class LocalFileHeader extends ZipHeader {
+    public short versionNeededToExtract;
+    public short flag;
+    public short compressionMethod;
+    public short lastModificationTime;
+    public short lastModificationDate;
+    public long compressedSize;
+    public long uncompressedSize;
+    public long crc;
+    public int nameLength;
+    public int extraLength;
 
 
-	/**
-	 * Constructs a new LFH from the given byte array.
-	 *
-	 * @param bytes a byte array containing a valid LFH block
-	 */
-	public LocalFileHeader(byte[] bytes)
-	{
-		super(LOCAL_FILE_HEADER, LOCAL_FILE_HEADER_LENGTH, bytes);
+    /**
+     * Constructs a new LFH from the given byte array.
+     *
+     * @param bytes a byte array containing a valid LFH block
+     */
+    public LocalFileHeader(byte[] bytes) {
+        super(LOCAL_FILE_HEADER, LOCAL_FILE_HEADER_LENGTH, bytes);
 
-		versionNeededToExtract = buffer.getShort();
-		flag = buffer.getShort();
-		compressionMethod = buffer.getShort();
-		lastModificationTime = buffer.getShort();
-		lastModificationDate = buffer.getShort();
-		crc = buffer.getInt() & 0xFFFFFFFFL;
-		compressedSize = buffer.getInt() & 0xFFFFFFFFL;
-		uncompressedSize = buffer.getInt() & 0xFFFFFFFFL;
-		nameLength = buffer.getShort();
-		extraLength = buffer.getShort();
-	}
+        versionNeededToExtract = buffer.getShort();
+        flag = buffer.getShort();
+        compressionMethod = buffer.getShort();
+        lastModificationTime = buffer.getShort();
+        lastModificationDate = buffer.getShort();
+        crc = buffer.getInt() & 0xFFFFFFFFL;
+        compressedSize = buffer.getInt() & 0xFFFFFFFFL;
+        uncompressedSize = buffer.getInt() & 0xFFFFFFFFL;
+        nameLength = buffer.getShort();
+        extraLength = buffer.getShort();
+    }
 
-	/**
-	 * Returns a really long String representation of a LFH instance.
-	 * Use only for debugging, not for daily consumption.
-	 */
+    /**
+     * Returns a really long String representation of a LFH instance.
+     * Use only for debugging, not for daily consumption.
+     */
     @Override
-	public String toString()
-	{
-		return
-			getClass().getName() +
-			"[" +
-			"sig=" + hex(signature) +
-			"versionNTE=" + hex(versionNeededToExtract) +
-			"flag=" + hex(flag) +
-			"method=" + hex(compressionMethod) +
-			"lmodTime=" + hex(lastModificationTime) +
-			"lmodDate=" + hex(lastModificationDate) +
-			"crc=" + hex(crc) +
-			"compSize=" + compressedSize +
-			"uncompSize=" + uncompressedSize +
-			"nameLength=" + nameLength +
-			"extraLength=" + extraLength +
-			"]";
-	}
+    public String toString() {
+        return
+                getClass().getName() +
+                        "[" +
+                        "sig=" + hex(signature) +
+                        "versionNTE=" + hex(versionNeededToExtract) +
+                        "flag=" + hex(flag) +
+                        "method=" + hex(compressionMethod) +
+                        "lmodTime=" + hex(lastModificationTime) +
+                        "lmodDate=" + hex(lastModificationDate) +
+                        "crc=" + hex(crc) +
+                        "compSize=" + compressedSize +
+                        "uncompSize=" + uncompressedSize +
+                        "nameLength=" + nameLength +
+                        "extraLength=" + extraLength +
+                        "]";
+    }
 }

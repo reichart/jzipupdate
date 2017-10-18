@@ -25,71 +25,61 @@ import java.io.InputStream;
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class ThrottledInputStream extends FilterInputStream
-{
-	private long kiloBytesPerSecond;
+public class ThrottledInputStream extends FilterInputStream {
+    private long kiloBytesPerSecond;
 
 
-	/**
-	 * Wraps the given InputStream while throttling the reading speed
-	 * to the specified number of KBytes per second.
-	 *
-	 * This class might cause timeouts on network connections
-	 * when too much throttling is used.
-	 *
-	 * @param in		the stream to throttle reading from
-	 * @param kiloBytesPerSecond	the maximum speed in KBytes per second (1024 B/s)
-	 */
-	public ThrottledInputStream(InputStream in, long kiloBytesPerSecond)
-	{
-		super(in);
-		this.kiloBytesPerSecond = kiloBytesPerSecond;
-	}
+    /**
+     * Wraps the given InputStream while throttling the reading speed
+     * to the specified number of KBytes per second.
+     * <p>
+     * This class might cause timeouts on network connections
+     * when too much throttling is used.
+     *
+     * @param in                 the stream to throttle reading from
+     * @param kiloBytesPerSecond the maximum speed in KBytes per second (1024 B/s)
+     */
+    public ThrottledInputStream(InputStream in, long kiloBytesPerSecond) {
+        super(in);
+        this.kiloBytesPerSecond = kiloBytesPerSecond;
+    }
 
-	private void throttle(long bytes)
-		throws IOException
-	{
-		try
-		{
-			long sleep = (1024*bytes)/(1000*kiloBytesPerSecond);
-			//System.out.println("throttling " + bytes + " bytes for " + sleep + " ms");
-			Thread.sleep(sleep);
-		}
-		catch (InterruptedException iex)
-		{
-			throw new IOException("Interrupted: " + iex.getMessage());
-		}
-	}
+    private void throttle(long bytes)
+            throws IOException {
+        try {
+            long sleep = (1024 * bytes) / (1000 * kiloBytesPerSecond);
+            //System.out.println("throttling " + bytes + " bytes for " + sleep + " ms");
+            Thread.sleep(sleep);
+        } catch (InterruptedException iex) {
+            throw new IOException("Interrupted: " + iex.getMessage());
+        }
+    }
 
     @Override
-	public int read() throws IOException
-	{
-		throttle(4);
+    public int read() throws IOException {
+        throttle(4);
 
-		return in.read();
-	}
-
-    @Override
-	public int read(byte[] b, int off, int len) throws IOException
-	{
-		throttle(len-off);
-
-		return in.read(b, off, len);
-	}
+        return in.read();
+    }
 
     @Override
-	public int read(byte[] b) throws IOException
-	{
-		throttle(b.length);
+    public int read(byte[] b, int off, int len) throws IOException {
+        throttle(len - off);
 
-		return in.read(b);
-	}
+        return in.read(b, off, len);
+    }
 
     @Override
-	public long skip(long n) throws IOException
-	{
-		throttle(n);
+    public int read(byte[] b) throws IOException {
+        throttle(b.length);
 
-		return in.skip(n);
-	}
+        return in.read(b);
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        throttle(n);
+
+        return in.skip(n);
+    }
 }

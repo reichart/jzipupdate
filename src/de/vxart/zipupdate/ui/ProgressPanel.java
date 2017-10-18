@@ -15,192 +15,174 @@
  */
 package de.vxart.zipupdate.ui;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-
 import de.vxart.zipupdate.ProgressListener;
 
+import javax.swing.*;
+
 /**
- *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class ProgressPanel extends Box implements ProgressListener
-{
-	private JProgressBar progressBar;
-	private JLabel message;
-	private JLabel leftDetail, rightDetail;
+public class ProgressPanel extends Box implements ProgressListener {
+    private JProgressBar progressBar;
+    private JLabel message;
+    private JLabel leftDetail, rightDetail;
 
-	private boolean speedShown = true;
-	private boolean timeShown = true;
+    private boolean speedShown = true;
+    private boolean timeShown = true;
 
-	private long start;
-	private long prevSecsLeft;
-	private float prevSpeed;
+    private long start;
+    private long prevSecsLeft;
+    private float prevSpeed;
 
-	private int call = 0;
+    private int call = 0;
 
 
-	public ProgressPanel()
-	{
-		super(BoxLayout.Y_AXIS);
+    public ProgressPanel() {
+        super(BoxLayout.Y_AXIS);
 
-		//setBorder(BorderFactory.createLineBorder(Color.RED, 4));
+        //setBorder(BorderFactory.createLineBorder(Color.RED, 4));
 
-		message = new JLabel("¿?");
+        message = new JLabel("¿?");
 
-		Box box = new Box(BoxLayout.X_AXIS);
-		box.add(message);
-		box.add(Box.createHorizontalGlue());
+        Box box = new Box(BoxLayout.X_AXIS);
+        box.add(message);
+        box.add(Box.createHorizontalGlue());
 
-		progressBar = new JProgressBar();
-		progressBar.setStringPainted(false);
+        progressBar = new JProgressBar();
+        progressBar.setStringPainted(false);
 
-		leftDetail = new JLabel(" ");
-		rightDetail = new JLabel(" ");
+        leftDetail = new JLabel(" ");
+        rightDetail = new JLabel(" ");
 
-		Box details = new Box(BoxLayout.X_AXIS);
-		details.add(leftDetail);
-		details.add(Box.createHorizontalGlue());
-		details.add(rightDetail);
+        Box details = new Box(BoxLayout.X_AXIS);
+        details.add(leftDetail);
+        details.add(Box.createHorizontalGlue());
+        details.add(rightDetail);
 
-		add(box);
-		add(details);
-		add(progressBar);
-	}
+        add(box);
+        add(details);
+        add(progressBar);
+    }
 
-	public void init(String _message)
-	{
-		this.message.setText(_message);
+    public void init(String _message) {
+        this.message.setText(_message);
 
-		leftDetail.setText(" ");
-		rightDetail.setText(" ");
+        leftDetail.setText(" ");
+        rightDetail.setText(" ");
 
-		progressBar.setStringPainted(false);
-		progressBar.setIndeterminate(true);
+        progressBar.setStringPainted(false);
+        progressBar.setIndeterminate(true);
 
-		start = System.currentTimeMillis();
-		call = 0;
-	}
+        start = System.currentTimeMillis();
+        call = 0;
+    }
 
-	public void init(String _message, int min, int max)
-	{
-		this.message.setText(_message);
+    public void init(String _message, int min, int max) {
+        this.message.setText(_message);
 
-		progressBar.setStringPainted(true);
-		progressBar.setIndeterminate(false);
+        progressBar.setStringPainted(true);
+        progressBar.setIndeterminate(false);
 
-		progressBar.setMinimum(min);
-		progressBar.setMaximum(max);
-		progressBar.setValue(min);
+        progressBar.setMinimum(min);
+        progressBar.setMaximum(max);
+        progressBar.setValue(min);
 
-		start = System.currentTimeMillis();
-		call = 0;
-	}
+        start = System.currentTimeMillis();
+        call = 0;
+    }
 
-	public void update(int value)
-	{
-		long now = System.currentTimeMillis();
+    public void update(int value) {
+        long now = System.currentTimeMillis();
 
-		float speed = value/(1+(now-start));
+        float speed = value / (1 + (now - start));
 
-		// smooth speed by interpolating with previous value
-		speed = (speed+prevSpeed)/2;
+        // smooth speed by interpolating with previous value
+        speed = (speed + prevSpeed) / 2;
 
-		String kBytePerSecond = String.valueOf(speed);
-		kBytePerSecond = kBytePerSecond.substring(
-			0, kBytePerSecond.indexOf('.')+2);
+        String kBytePerSecond = String.valueOf(speed);
+        kBytePerSecond = kBytePerSecond.substring(
+                0, kBytePerSecond.indexOf('.') + 2);
 
-		prevSpeed = speed;
+        prevSpeed = speed;
 
 		/*
-		 * Calculate percentage and times
+         * Calculate percentage and times
 		 */
-		int percent = 100*value / progressBar.getMaximum();
+        int percent = 100 * value / progressBar.getMaximum();
 
-		long secsElapsed = (now-start)/1000;
-		long secsTotal = 100*secsElapsed/(percent+1);
-		long secsLeft = 1+secsTotal-secsElapsed;
+        long secsElapsed = (now - start) / 1000;
+        long secsTotal = 100 * secsElapsed / (percent + 1);
+        long secsLeft = 1 + secsTotal - secsElapsed;
 
-		// smooth time by interpolating with previous value
-		secsLeft = (secsLeft+prevSecsLeft)/2;
+        // smooth time by interpolating with previous value
+        secsLeft = (secsLeft + prevSecsLeft) / 2;
 
-		prevSecsLeft = secsLeft;
+        prevSecsLeft = secsLeft;
 
 
 		/*
 		 * Update UI elements
 		 */
-		if(speed > 0 && speedShown)
-			leftDetail.setText(kBytePerSecond + " KB/s");
-		else
-			leftDetail.setText("");
+        if (speed > 0 && speedShown)
+            leftDetail.setText(kBytePerSecond + " KB/s");
+        else
+            leftDetail.setText("");
 
-		if(timeShown)
-			rightDetail.setText("(" +	getFormattedTime(secsLeft) + " left)");
+        if (timeShown)
+            rightDetail.setText("(" + getFormattedTime(secsLeft) + " left)");
 
-		progressBar.setValue(value);
+        progressBar.setValue(value);
 
-		call++;
-	}
+        call++;
+    }
 
-	public void label(String _message)
-	{
-		this.message.setText(_message);
-	}
+    public void label(String _message) {
+        this.message.setText(_message);
+    }
 
-	private static String getFormattedTime(long seconds)
-	{
-		StringBuffer buffer = new StringBuffer();
+    private static String getFormattedTime(long seconds) {
+        StringBuffer buffer = new StringBuffer();
 
-		long minutes = seconds / 60;
-		if(minutes > 0)
-		{
-			buffer.append(minutes);
-			buffer.append("m ");
-			seconds %= 60;
-		}
+        long minutes = seconds / 60;
+        if (minutes > 0) {
+            buffer.append(minutes);
+            buffer.append("m ");
+            seconds %= 60;
+        }
 
-		buffer.append(seconds);
-		buffer.append("s");
+        buffer.append(seconds);
+        buffer.append("s");
 
-		return buffer.toString();
-	}
+        return buffer.toString();
+    }
 
-	public int getProgress()
-	{
-		return progressBar.getValue();
-	}
+    public int getProgress() {
+        return progressBar.getValue();
+    }
 
-	public void finish()
-	{
-		return;
-	}
+    public void finish() {
+        return;
+    }
 
-	public boolean isSpeedShown()
-	{
-		return speedShown;
-	}
+    public boolean isSpeedShown() {
+        return speedShown;
+    }
 
-	public void setSpeedShown(boolean speedShown)
-	{
-		this.speedShown = speedShown;
+    public void setSpeedShown(boolean speedShown) {
+        this.speedShown = speedShown;
 
-		if(!speedShown)
-			leftDetail.setText(" ");
-	}
+        if (!speedShown)
+            leftDetail.setText(" ");
+    }
 
-	public boolean isTimeShown()
-	{
-		return timeShown;
-	}
+    public boolean isTimeShown() {
+        return timeShown;
+    }
 
-	public void setTimeShown(boolean timeShown)
-	{
-		this.timeShown = timeShown;
+    public void setTimeShown(boolean timeShown) {
+        this.timeShown = timeShown;
 
-		if(!timeShown)
-			rightDetail.setText(" ");
-	}
+        if (!timeShown)
+            rightDetail.setText(" ");
+    }
 }

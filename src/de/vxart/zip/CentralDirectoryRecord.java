@@ -23,51 +23,49 @@ import static de.vxart.zip.ZipConstants.CENTRAL_DIRECTORY_LENGTH;
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class CentralDirectoryRecord extends ZipHeader
-{
-	public short versionMadeBy;
-	public short versionNeededToExtract;
-	public short flag;
-	public short compressionMethod;
-	public short lastModificationTime;
-	public short lastModificationDate;
-	public long crc;
-	public long compressedSize;
-	public long uncompressedSize;
-	public short nameLength;
-	public short extraLength;
-	public short fileCommentLength;
-	public short startDiskNumber;
-	public short internalFileAttributes;
-	public int externalFileAttributes;
-	public int offsetToLocalFileHeader;
+public class CentralDirectoryRecord extends ZipHeader {
+    public short versionMadeBy;
+    public short versionNeededToExtract;
+    public short flag;
+    public short compressionMethod;
+    public short lastModificationTime;
+    public short lastModificationDate;
+    public long crc;
+    public long compressedSize;
+    public long uncompressedSize;
+    public short nameLength;
+    public short extraLength;
+    public short fileCommentLength;
+    public short startDiskNumber;
+    public short internalFileAttributes;
+    public int externalFileAttributes;
+    public int offsetToLocalFileHeader;
 
 
-	/**
-	 * Constructs a new CDR from the given byte array.
-	 *
-	 * @param bytes a byte array containing a valid CDR block
-	 */
-	public CentralDirectoryRecord(byte[] bytes)
-	{
-		super(CENTRAL_DIRECTORY, CENTRAL_DIRECTORY_LENGTH, bytes);
+    /**
+     * Constructs a new CDR from the given byte array.
+     *
+     * @param bytes a byte array containing a valid CDR block
+     */
+    public CentralDirectoryRecord(byte[] bytes) {
+        super(CENTRAL_DIRECTORY, CENTRAL_DIRECTORY_LENGTH, bytes);
 
-		versionMadeBy = buffer.getShort();
-		versionNeededToExtract = buffer.getShort();
-		flag = buffer.getShort();
-		compressionMethod = buffer.getShort();
-		lastModificationTime = buffer.getShort();
-		lastModificationDate = buffer.getShort();
-		crc = buffer.getInt() & 0xFFFFFFFFL;
-		compressedSize = buffer.getInt() & 0xFFFFFFFFL;
-		uncompressedSize = buffer.getInt() & 0xFFFFFFFFL;
-		nameLength = buffer.getShort();
-		extraLength = buffer.getShort();
-		fileCommentLength = buffer.getShort();
-		startDiskNumber = buffer.getShort();
-		internalFileAttributes = buffer.getShort();
-		externalFileAttributes = buffer.getInt();
-		offsetToLocalFileHeader = buffer.getInt();
-	}
+        versionMadeBy = buffer.getShort();
+        versionNeededToExtract = buffer.getShort();
+        flag = buffer.getShort();
+        compressionMethod = buffer.getShort();
+        lastModificationTime = buffer.getShort();
+        lastModificationDate = buffer.getShort();
+        crc = buffer.getInt() & 0xFFFFFFFFL;
+        compressedSize = buffer.getInt() & 0xFFFFFFFFL;
+        uncompressedSize = buffer.getInt() & 0xFFFFFFFFL;
+        nameLength = buffer.getShort();
+        extraLength = buffer.getShort();
+        fileCommentLength = buffer.getShort();
+        startDiskNumber = buffer.getShort();
+        internalFileAttributes = buffer.getShort();
+        externalFileAttributes = buffer.getInt();
+        offsetToLocalFileHeader = buffer.getInt();
+    }
 
 }

@@ -23,34 +23,32 @@ import static de.vxart.zip.ZipConstants.END_OF_CENTRAL_DIRECTORY_LENGTH;
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class EndOfCentralDirectory extends ZipHeader
-{
+public class EndOfCentralDirectory extends ZipHeader {
 
-	public short currentDiskNumber;
-	public short cdStartDiskNumber;
-	public short centralDirectoryRecordsThisDisk;
-	public short centralDirectoryRecordsAllDisks;
-	public int centralDirectorySize;
-	public int centralDirectoryOffset;
-	public short commentLength;
+    public short currentDiskNumber;
+    public short cdStartDiskNumber;
+    public short centralDirectoryRecordsThisDisk;
+    public short centralDirectoryRecordsAllDisks;
+    public int centralDirectorySize;
+    public int centralDirectoryOffset;
+    public short commentLength;
 
 
-	/**
-	 * Constructs a new ECD from the given byte array.
-	 *
-	 * @param bytes a byte array containing a valid ECD block
-	 */
-	public EndOfCentralDirectory(byte[] bytes)
-	{
-		super(END_OF_CENTRAL_DIRECTORY, END_OF_CENTRAL_DIRECTORY_LENGTH, bytes);
+    /**
+     * Constructs a new ECD from the given byte array.
+     *
+     * @param bytes a byte array containing a valid ECD block
+     */
+    public EndOfCentralDirectory(byte[] bytes) {
+        super(END_OF_CENTRAL_DIRECTORY, END_OF_CENTRAL_DIRECTORY_LENGTH, bytes);
 
-		currentDiskNumber = buffer.getShort();
-		cdStartDiskNumber = buffer.getShort();
-		centralDirectoryRecordsThisDisk = buffer.getShort();
-		centralDirectoryRecordsAllDisks = buffer.getShort();
-		centralDirectorySize = buffer.getInt();
-		centralDirectoryOffset = buffer.getInt();
-		commentLength = buffer.getShort();
-	}
+        currentDiskNumber = buffer.getShort();
+        cdStartDiskNumber = buffer.getShort();
+        centralDirectoryRecordsThisDisk = buffer.getShort();
+        centralDirectoryRecordsAllDisks = buffer.getShort();
+        centralDirectorySize = buffer.getInt();
+        centralDirectoryOffset = buffer.getInt();
+        commentLength = buffer.getShort();
+    }
 
 }

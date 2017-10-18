@@ -15,72 +15,61 @@
  */
 package de.vxart.zipupdate.ui;
 
-import java.awt.Dimension;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
 import de.vxart.zipupdate.ProgressListener;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
- *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class ProgressDialog implements ProgressListener
-{
-	private ProgressPanel panel;
-	private JOptionPane pane;
-	private JDialog dialog;
+public class ProgressDialog implements ProgressListener {
+    private ProgressPanel panel;
+    private JOptionPane pane;
+    private JDialog dialog;
 
 
-	public ProgressDialog()
-	{
-		panel = new ProgressPanel();
+    public ProgressDialog() {
+        panel = new ProgressPanel();
 
-		pane = new JOptionPane(
-			panel, // message
-			JOptionPane.INFORMATION_MESSAGE, // msg type
-			JOptionPane.DEFAULT_OPTION, // options type
-			null, // icon
-			new Object[0]); // options
+        pane = new JOptionPane(
+                panel, // message
+                JOptionPane.INFORMATION_MESSAGE, // msg type
+                JOptionPane.DEFAULT_OPTION, // options type
+                null, // icon
+                new Object[0]); // options
 
-		dialog = pane.createDialog(null, "Updating");
-		Dimension size = dialog.getSize();
-		dialog.setSize(size.width*3/2, size.height);
-		dialog.setModal(false);
-	}
+        dialog = pane.createDialog(null, "Updating");
+        Dimension size = dialog.getSize();
+        dialog.setSize(size.width * 3 / 2, size.height);
+        dialog.setModal(false);
+    }
 
-	public void init(String message)
-	{
-		panel.init(message);
-		dialog.setVisible(true);
-	}
+    public void init(String message) {
+        panel.init(message);
+        dialog.setVisible(true);
+    }
 
-	public void init(String message, int min, int max)
-	{
-		panel.init(message, min, max);
-		dialog.setVisible(true);
-	}
+    public void init(String message, int min, int max) {
+        panel.init(message, min, max);
+        dialog.setVisible(true);
+    }
 
-	public void update(int value)
-	{
-		panel.update(value);
-	}
+    public void update(int value) {
+        panel.update(value);
+    }
 
-	public void label(String message)
-	{
-		panel.label(message);
-	}
+    public void label(String message) {
+        panel.label(message);
+    }
 
-	public int getProgress()
-	{
-		return panel.getProgress();
-	}
+    public int getProgress() {
+        return panel.getProgress();
+    }
 
-	public void finish()
-	{
-		panel.finish();
-		dialog.setVisible(false);
-		dialog.dispose();
-	}
+    public void finish() {
+        panel.finish();
+        dialog.setVisible(false);
+        dialog.dispose();
+    }
 }

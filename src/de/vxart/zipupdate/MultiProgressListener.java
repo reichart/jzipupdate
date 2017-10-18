@@ -16,10 +16,8 @@
 package de.vxart.zipupdate;
 
 /**
- *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public interface MultiProgressListener extends ProgressListener
-{
-	public ProgressListener getOverallProgressListener();
+public interface MultiProgressListener extends ProgressListener {
+    public ProgressListener getOverallProgressListener();
 }

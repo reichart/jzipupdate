@@ -15,100 +15,84 @@
  */
 package de.vxart.zipupdate.ui;
 
-import java.awt.Dimension;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
 import de.vxart.zipupdate.MultiProgressListener;
 import de.vxart.zipupdate.ProgressListener;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
- *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class MultiProgressDialog implements MultiProgressListener
-{
-	private ProgressPanel overallProgress;
-	private ProgressPanel panel;
-	private JOptionPane pane;
-	JDialog dialog;
+public class MultiProgressDialog implements MultiProgressListener {
+    private ProgressPanel overallProgress;
+    private ProgressPanel panel;
+    private JOptionPane pane;
+    JDialog dialog;
 
-	public MultiProgressDialog()
-	{
-		super();
+    public MultiProgressDialog() {
+        super();
 
-		panel = new ProgressPanel();
+        panel = new ProgressPanel();
 
-		overallProgress = new ProgressPanel()
-		{
+        overallProgress = new ProgressPanel() {
             @Override
-			public void finish()
-			{
-				super.finish();
-				dialog.setVisible(false);
-				dialog.dispose();
-			}
-		};
-		overallProgress.setSpeedShown(false);
-		overallProgress.setTimeShown(false);
+            public void finish() {
+                super.finish();
+                dialog.setVisible(false);
+                dialog.dispose();
+            }
+        };
+        overallProgress.setSpeedShown(false);
+        overallProgress.setTimeShown(false);
 
-		Box multiPanel = new Box(BoxLayout.Y_AXIS);
-		multiPanel.add(overallProgress);
-		multiPanel.add(panel);
+        Box multiPanel = new Box(BoxLayout.Y_AXIS);
+        multiPanel.add(overallProgress);
+        multiPanel.add(panel);
 
-		pane = new JOptionPane(
-			multiPanel, // message
-			JOptionPane.INFORMATION_MESSAGE, // msg type
-			JOptionPane.DEFAULT_OPTION, // options type
-			null, // icon
-			new Object[0]); // options
+        pane = new JOptionPane(
+                multiPanel, // message
+                JOptionPane.INFORMATION_MESSAGE, // msg type
+                JOptionPane.DEFAULT_OPTION, // options type
+                null, // icon
+                new Object[0]); // options
 
-		overallProgress.init("Initializing...");
+        overallProgress.init("Initializing...");
 
-		dialog = pane.createDialog(null, "Updating");
-		Dimension size = dialog.getSize();
-		dialog.setSize(size.width*3/2, size.height);
-		dialog.setModal(false);
-	}
+        dialog = pane.createDialog(null, "Updating");
+        Dimension size = dialog.getSize();
+        dialog.setSize(size.width * 3 / 2, size.height);
+        dialog.setModal(false);
+    }
 
 
-	public void init(String message)
-	{
-		panel.init(message);
-		dialog.setVisible(true);
-	}
+    public void init(String message) {
+        panel.init(message);
+        dialog.setVisible(true);
+    }
 
-	public void init(String message, int min, int max)
-	{
-		panel.init(message, min, max);
-		dialog.setVisible(true);
-	}
+    public void init(String message, int min, int max) {
+        panel.init(message, min, max);
+        dialog.setVisible(true);
+    }
 
-	public void update(int value)
-	{
-		panel.update(value);
-	}
+    public void update(int value) {
+        panel.update(value);
+    }
 
-	public void label(String message)
-	{
-		panel.label(message);
-	}
+    public void label(String message) {
+        panel.label(message);
+    }
 
-	public int getProgress()
-	{
-		return panel.getProgress();
-	}
+    public int getProgress() {
+        return panel.getProgress();
+    }
 
-	public void finish()
-	{
-		panel.finish();
-	}
+    public void finish() {
+        panel.finish();
+    }
 
-	public ProgressListener getOverallProgressListener()
-	{
-		return overallProgress;
-	}
+    public ProgressListener getOverallProgressListener() {
+        return overallProgress;
+    }
 }

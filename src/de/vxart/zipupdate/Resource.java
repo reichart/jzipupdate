@@ -23,48 +23,50 @@ import java.io.InputStream;
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class Resource
-{
-	private String name;
-	private InputStream data;
-	private long crc;
+public class Resource {
+    private String name;
+    private InputStream data;
+    private long crc;
 
-	public final static String FLAG_NOOP = "===";
-	public final static String FLAG_ADD = "+++";
-	public final static String FLAG_UPDATE = "!!!";
-	public final static String FLAG_REMOVE = "---";
+    public final static String FLAG_NOOP = "===";
+    public final static String FLAG_ADD = "+++";
+    public final static String FLAG_UPDATE = "!!!";
+    public final static String FLAG_REMOVE = "---";
 
 
-	public Resource(String name)
-	{
-		this.name = name;
-	}
+    public Resource(String name) {
+        this.name = name;
+    }
 
-	public InputStream getData() {
-		return data;
-	}
-	public void setData(InputStream data) {
-		this.data = data;
-	}
-	public long getCrc() {
-		return crc;
-	}
-	public void setCrc(long crc) {
-		this.crc = crc;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+    public InputStream getData() {
+        return data;
+    }
+
+    public void setData(InputStream data) {
+        this.data = data;
+    }
+
+    public long getCrc() {
+        return crc;
+    }
+
+    public void setCrc(long crc) {
+        this.crc = crc;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @Override
-	public String toString()
-	{
-		return getClass().getName() +
-			"[name=" + name +
-			";crc=" + Long.toHexString(crc) +
-			"]";
-	}
+    public String toString() {
+        return getClass().getName() +
+                "[name=" + name +
+                ";crc=" + Long.toHexString(crc) +
+                "]";
+    }
 }

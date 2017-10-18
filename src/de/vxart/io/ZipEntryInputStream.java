@@ -15,57 +15,49 @@
  */
 package de.vxart.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.SequenceInputStream;
+import de.vxart.zip.LocalFileHeader;
+
+import java.io.*;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import de.vxart.zip.LocalFileHeader;
-import static de.vxart.zip.ZipConstants.LOCAL_FILE_HEADER_LENGTH;
-import static de.vxart.zip.ZipConstants.METHOD_DEFLATED;
-import static de.vxart.zip.ZipConstants.METHOD_STORED;
+import static de.vxart.zip.ZipConstants.*;
 
 /**
  * Extracts the data from a ZIP file block.
  *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public class ZipEntryInputStream extends FilterInputStream
-{
-	/**
-	 * Creates am InputStream that will read the uncompressed data
-	 * of a ZIP entry. This class expects the given InputStream to
-	 * be a complete ZIP local file block, starting with the magical
-	 * number 0x04034B50.
-	 *
-	 * @param in
-	 * @throws IOException
-	 */
-	public ZipEntryInputStream(DataInputStream in)
-		throws IOException
-	{
-		super(in);
+public class ZipEntryInputStream extends FilterInputStream {
+    /**
+     * Creates am InputStream that will read the uncompressed data
+     * of a ZIP entry. This class expects the given InputStream to
+     * be a complete ZIP local file block, starting with the magical
+     * number 0x04034B50.
+     *
+     * @param in
+     * @throws IOException
+     */
+    public ZipEntryInputStream(DataInputStream in)
+            throws IOException {
+        super(in);
 
-		byte[] headerBytes = new byte[LOCAL_FILE_HEADER_LENGTH];
-		in.readFully(headerBytes);
-		LocalFileHeader header = new LocalFileHeader(headerBytes);
+        byte[] headerBytes = new byte[LOCAL_FILE_HEADER_LENGTH];
+        in.readFully(headerBytes);
+        LocalFileHeader header = new LocalFileHeader(headerBytes);
 
-		in.skipBytes(header.nameLength);
-		in.skipBytes(header.extraLength);
+        in.skipBytes(header.nameLength);
+        in.skipBytes(header.extraLength);
 
-		switch (header.compressionMethod)
-		{
-			case METHOD_STORED:
-				break;
+        switch (header.compressionMethod) {
+            case METHOD_STORED:
+                break;
 
-			case METHOD_DEFLATED:
-				Inflater decomp = new Inflater(true);
+            case METHOD_DEFLATED:
+                Inflater decomp = new Inflater(true);
 
 				/*
-				 * This ugly construct is brought to you by the weird
+                 * This ugly construct is brought to you by the weird
 				 * behavior of the Inflater class when in "nowrap" mode:
 				 *
 				 * From the javadoc of the Inflater(boolean) constructor:
@@ -75,17 +67,17 @@ public class ZipEntryInputStream extends FilterInputStream
 				 *
 				 * Luckily Java provides some ready-to-go classes :)
 				 */
-				this.in = new InflaterInputStream(
-					new SequenceInputStream(
-						this.in,
-						new ByteArrayInputStream(new byte[1])),
-					decomp);
-				break;
+                this.in = new InflaterInputStream(
+                        new SequenceInputStream(
+                                this.in,
+                                new ByteArrayInputStream(new byte[1])),
+                        decomp);
+                break;
 
-			default:
-				throw new IOException(
-					"Unsupported compression method: " +
-					Integer.toHexString(header.compressionMethod));
-		}
-	}
+            default:
+                throw new IOException(
+                        "Unsupported compression method: " +
+                                Integer.toHexString(header.compressionMethod));
+        }
+    }
 }

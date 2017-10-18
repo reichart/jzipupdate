@@ -16,55 +16,52 @@
 package de.vxart.zipupdate;
 
 /**
- *
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
-public interface ProgressListener
-{
-	/**
+public interface ProgressListener {
+    /**
      * Sets or resets this listener to indeterminate mode and labels it with the
      * given message.
-     *
+     * <p>
      * Indeterminate mode is used for tasks of unknown length.
      */
-	public void init(String message);
+    public void init(String message);
 
-	/**
-	 * Sets or resets this listener to determinate
-	 * mode using the specified message, minimum and
-	 * maximum values.
-	 */
-	public void init(String message, int min, int max);
+    /**
+     * Sets or resets this listener to determinate
+     * mode using the specified message, minimum and
+     * maximum values.
+     */
+    public void init(String message, int min, int max);
 
-	/**
-	 * Updates the progress to the specified value.
-	 *
-	 * Implementations may rely on this happening in order to
-	 * provide advanced progress information, therefore the
-	 * caller should update continously and not "jump"around.
-	 *
-	 * @param progress the new progress value
-	 */
-	public void update(int progress);
+    /**
+     * Updates the progress to the specified value.
+     * <p>
+     * Implementations may rely on this happening in order to
+     * provide advanced progress information, therefore the
+     * caller should update continously and not "jump"around.
+     *
+     * @param progress the new progress value
+     */
+    public void update(int progress);
 
-	/**
-	 * Returns the latest value set by the update method.
-	 *
-	 * @return the current progress value
-	 */
-	public int getProgress();
+    /**
+     * Returns the latest value set by the update method.
+     *
+     * @return the current progress value
+     */
+    public int getProgress();
 
-	/**
-	 * Labels the current task with the specified string.
-	 *
-	 * @param label a label describing the current task
-	 */
-	public void label(String label);
+    /**
+     * Labels the current task with the specified string.
+     *
+     * @param label a label describing the current task
+     */
+    public void label(String label);
 
-	/**
-	 * Finishes the display of progress by a progress listener,
-	 * e.g. by closing a progress dialog.
-	 *
-	 */
-	public void finish();
+    /**
+     * Finishes the display of progress by a progress listener,
+     * e.g. by closing a progress dialog.
+     */
+    public void finish();
 }
