@@ -56,17 +56,17 @@ public class ZipEntryInputStream extends FilterInputStream {
             case METHOD_DEFLATED:
                 Inflater decomp = new Inflater(true);
 
-				/*
+                /*
                  * This ugly construct is brought to you by the weird
-				 * behavior of the Inflater class when in "nowrap" mode:
-				 *
-				 * From the javadoc of the Inflater(boolean) constructor:
-				 *     "When using the 'nowrap' option it is also
-				 *      necessary to provide an extra 'dummy' byte
-				 *      as input."
-				 *
-				 * Luckily Java provides some ready-to-go classes :)
-				 */
+                 * behavior of the Inflater class when in "nowrap" mode:
+                 *
+                 * From the javadoc of the Inflater(boolean) constructor:
+                 *     "When using the 'nowrap' option it is also
+                 *      necessary to provide an extra 'dummy' byte
+                 *      as input."
+                 *
+                 * Luckily Java provides some ready-to-go classes :)
+                 */
                 this.in = new InflaterInputStream(
                         new SequenceInputStream(
                                 this.in,

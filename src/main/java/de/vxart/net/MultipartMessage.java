@@ -59,12 +59,12 @@ public class MultipartMessage
     public MultipartMessage(InputStream input, String boundary) {
         DASH_BOUNDARY = new String(DASH_DELIM) + boundary;
 
-		/*
+        /*
          * Wrapping the original InputStream into that class
-		 * is mandatory for the multipart parsing to work!
-		 * (regular BufferedInputStreams read stuff in
-		 *  a very annoying and inconvenient manner)
-		 */
+         * is mandatory for the multipart parsing to work!
+         * (regular BufferedInputStreams read stuff in
+         *  a very annoying and inconvenient manner)
+         */
         this.input = new DataInputStream(input);
     }
 
@@ -82,12 +82,12 @@ public class MultipartMessage
 
         String contentLength = headers.get(CONTENT_LENGTH);
         if (contentLength == null) {
-			/*
-			 * The value of the Content-Range header is structured
-			 * like "bytes START-END/TOTAL", so we need to substract
-			 * values of the START and END offsets to get the actual
-			 * size of the data.
-			 */
+            /*
+             * The value of the Content-Range header is structured
+             * like "bytes START-END/TOTAL", so we need to substract
+             * values of the START and END offsets to get the actual
+             * size of the data.
+             */
             String contentRange = headers.get(CONTENT_RANGE.toLowerCase());
 
             if (contentRange == null)
@@ -96,10 +96,10 @@ public class MultipartMessage
             Pattern numberPattern = Pattern.compile("(\\d)+");
             Matcher matcher = numberPattern.matcher(contentRange);
 
-			/*
-			 * This arrays will hold the number in this order:
-			 * START, END, OFFSET
-			 */
+            /*
+             * This arrays will hold the number in this order:
+             * START, END, OFFSET
+             */
             long[] rangeNumbers = new long[3];
 
             try {
@@ -114,10 +114,10 @@ public class MultipartMessage
 
             size = rangeNumbers[1] - rangeNumbers[0];
         } else {
-			/*
-			 * The value of the Content-Length header
-			 * is a plain number denoting the data size.
-			 */
+            /*
+             * The value of the Content-Length header
+             * is a plain number denoting the data size.
+             */
             try {
                 size = Long.parseLong(contentLength);
             } catch (NumberFormatException nfex) {
@@ -184,30 +184,30 @@ public class MultipartMessage
         try {
             String line;
 
-			/*
-			 * Find the boundary preceding the first part
-			 * (discarding the preamble if there is one)
-			 */
+            /*
+             * Find the boundary preceding the first part
+             * (discarding the preamble if there is one)
+             */
             do {
                 line = readLine();
 
-				/* TODO
-				 * Differences in multipart-responses from Apache and Tomcat?
-				 *
-				if(line.equals(""))
-				{
-					throw new RuntimeException("Empty line in wrong place.");
-				}
-				*/
+                /* TODO
+                 * Differences in multipart-responses from Apache and Tomcat?
+                 *
+                if(line.equals(""))
+                {
+                    throw new RuntimeException("Empty line in wrong place.");
+                }
+                */
             }
             while (!line.startsWith(DASH_BOUNDARY));
 
             if (line.endsWith("--")) {
-				/*
-				 * This closes any streams to the tmp file so deleteOnExit works,
-				 * see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4171239.
-				 * Thanks pepe :)
-				 */
+                /*
+                 * This closes any streams to the tmp file so deleteOnExit works,
+                 * see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4171239.
+                 * Thanks pepe :)
+                 */
                 input.close();
                 return false;
             }
@@ -227,9 +227,9 @@ public class MultipartMessage
         ensurePosition();
 
         try {
-			/*
-			 * Parse any headers for this part
-			 */
+            /*
+             * Parse any headers for this part
+             */
             Map<String, String> headers = new HashMap<>();
 
             String line;

@@ -50,10 +50,10 @@ public abstract class ZipHeader {
                             size + " bytes long: " + bytes.length);
         }
 
-		/*
+        /*
          * Wrap the bytes into a buffer to easily
-		 * get at the multi-bytes values we need.
-		 */
+         * get at the multi-bytes values we need.
+         */
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 

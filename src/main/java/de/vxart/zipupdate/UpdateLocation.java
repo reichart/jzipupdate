@@ -137,27 +137,27 @@ public class UpdateLocation {
                         ), checker)
         );
 
-		/*
+        /*
          * Read all the resource meta-data until we reach the
-		 * empty name marking the end of the resource list.
-		 */
+         * empty name marking the end of the resource list.
+         */
         String name;
         long previousEndOffset = -1;
 
         while (!"".equals(name = index.readUTF())) {
-			/*
-			 * Create a Resource for the index Set
-			 * we're going to return.
-			 */
+            /*
+             * Create a Resource for the index Set
+             * we're going to return.
+             */
             Resource resource = new Resource(name);
             resource.setCrc(index.readLong());
             resources.add(resource);
 
-			/*
-			 * Store the start and end offsets for all
-			 * Resources away from the index, no need for
-			 * the higher-level stuff to know about it.
-			 */
+            /*
+             * Store the start and end offsets for all
+             * Resources away from the index, no need for
+             * the higher-level stuff to know about it.
+             */
             long endOffset = index.readLong();
 
             Range range = new Range(previousEndOffset, endOffset);
@@ -167,12 +167,12 @@ public class UpdateLocation {
             previousEndOffset = endOffset;
         }
 
-		/*
-		 * Finally get both the checksum computed from the
-		 * input stream as well as the stored checksum and
-		 * see if they match. Most data corruption will be
-		 * catched by the inflater anyway.
-		 */
+        /*
+         * Finally get both the checksum computed from the
+         * input stream as well as the stored checksum and
+         * see if they match. Most data corruption will be
+         * catched by the inflater anyway.
+         */
         long computedChecksum = checker.getValue();
         long storedChecksum = index.readLong();
 
@@ -190,20 +190,20 @@ public class UpdateLocation {
      */
     public void fetchData(Map<Resource, String> diff)
             throws IOException {
-		/*
-		 * We have to sort the byte-ranges of the resource we're
-		 * going to download for these reasons:
-		 *
-		 * 1) This guarantees that the ordering of entries we're going to
-		 *    download will be the *same* as in the remote ZIP file.
-		 *    This is important when udpating JAR files where the manifest
-		 *    file has to be the first entry.
-		 *
-		 * 2) If the byte-ranges in the HTTP request hit the server in
-		 *    *ascending* order, the server can reply more quickly because
-		 *    it has to do only forward-seeking in the ZIP file (no jumping
-		 *    around to provide the ranges).
-		 */
+        /*
+         * We have to sort the byte-ranges of the resource we're
+         * going to download for these reasons:
+         *
+         * 1) This guarantees that the ordering of entries we're going to
+         *    download will be the *same* as in the remote ZIP file.
+         *    This is important when udpating JAR files where the manifest
+         *    file has to be the first entry.
+         *
+         * 2) If the byte-ranges in the HTTP request hit the server in
+         *    *ascending* order, the server can reply more quickly because
+         *    it has to do only forward-seeking in the ZIP file (no jumping
+         *    around to provide the ranges).
+         */
         SortedSet<Range> sortedRanges = new TreeSet<>();
         for (Resource resource : diff.keySet()) {
             String flag = diff.get(resource);
@@ -215,9 +215,9 @@ public class UpdateLocation {
             return;
         }
 
-		/*
-		 * Build the byte ranges header.
-		 */
+        /*
+         * Build the byte ranges header.
+         */
         StringBuilder byteRangesHeader = new StringBuilder("bytes=");
 
         int estimatedSize = 0;
@@ -241,16 +241,16 @@ public class UpdateLocation {
             first = false;
         }
 
-		/*
-		 * Connect to URL.
-		 */
+        /*
+         * Connect to URL.
+         */
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestProperty("Range", byteRangesHeader.toString());
         conn.connect();
 
-		/*
-		 * Download the data into a temp file.
-		 */
+        /*
+         * Download the data into a temp file.
+         */
         InputStream remote;
         // TODO Egal added try-catch
         try {
@@ -313,11 +313,11 @@ public class UpdateLocation {
 
         InputStream input = new FileInputStream(cacheEntry.file);
 
-		/*
-		 * If only a single resource got requested, the server will respond
-		 * with a normal request containing only the byte-range data as body,
-		 * no need to run the multipart parser all over it.
-		 */
+        /*
+         * If only a single resource got requested, the server will respond
+         * with a normal request containing only the byte-range data as body,
+         * no need to run the multipart parser all over it.
+         */
         int remoteResources = 0;
         for (Resource resource : diff.keySet()) {
             String flag = diff.get(resource);
@@ -326,9 +326,9 @@ public class UpdateLocation {
         }
 
         if (remoteResources == 1) {
-			/*
-			 * Ugly but it works ;)
-			 */
+            /*
+             * Ugly but it works ;)
+             */
             InputStream data;
 
             try {
@@ -398,10 +398,10 @@ public class UpdateLocation {
     }
 
     private static String getBoundary(String contentType) {
-		/*
-		 * Find the beginning of the boundary
-		 * in the content type header.
-		 */
+        /*
+         * Find the beginning of the boundary
+         * in the content type header.
+         */
         int boundaryIndex = contentType.indexOf(BOUNDARY_DELIM);
         if (boundaryIndex < 0) {
             throw new NullPointerException("No boundary was found.");
@@ -410,22 +410,22 @@ public class UpdateLocation {
         String boundary;
 
         /*
-		 * Look for a charset component following the boundary
-		 * in the content type header.
-		 */
+         * Look for a charset component following the boundary
+         * in the content type header.
+         */
         int charsetIndex = contentType.indexOf(";", boundaryIndex);
         if (charsetIndex > 0) {
-        	/*
-        	 * There is a charset component, so chop
-        	 * that off from the boundary.
-        	 */
+            /*
+             * There is a charset component, so chop
+             * that off from the boundary.
+             */
             boundary = contentType.substring(
                     boundaryIndex + BOUNDARY_DELIM.length(),
                     charsetIndex);
         } else {
-        	/*
-        	 * No charset, boundary goes up to the end of the header.
-        	 */
+            /*
+             * No charset, boundary goes up to the end of the header.
+             */
             boundary = contentType.substring(
                     boundaryIndex + BOUNDARY_DELIM.length());
         }
@@ -433,20 +433,20 @@ public class UpdateLocation {
         return boundary;
     }
 
-	/*
-	private static void copy(InputStream in, OutputStream out)
-		throws IOException
-	{
-		byte[] buf = new byte[4096];
-		int len;
+    /*
+    private static void copy(InputStream in, OutputStream out)
+        throws IOException
+    {
+        byte[] buf = new byte[4096];
+        int len;
 
-		while((len = in.read(buf)) != -1)
-		{
-			out.write(buf, 0, len);
-		}
+        while((len = in.read(buf)) != -1)
+        {
+            out.write(buf, 0, len);
+        }
 
-	}
-	*/
+    }
+    */
 
     /**
      * Encapsulates the cached data and headers

@@ -105,9 +105,9 @@ public class ProgressPanel extends Box implements ProgressListener {
 
         prevSpeed = speed;
 
-		/*
+        /*
          * Calculate percentage and times
-		 */
+         */
         int percent = 100 * value / progressBar.getMaximum();
 
         long secsElapsed = (now - start) / 1000;
@@ -120,9 +120,9 @@ public class ProgressPanel extends Box implements ProgressListener {
         prevSecsLeft = secsLeft;
 
 
-		/*
-		 * Update UI elements
-		 */
+        /*
+         * Update UI elements
+         */
         if (speed > 0 && speedShown)
             leftDetail.setText(kBytePerSecond + " KB/s");
         else

@@ -113,12 +113,12 @@ public class Indexer {
             long crc = entry.getCrc();
             long endOffset = entries.get(entry);
 
-			/*
+            /*
             System.out.println(
-				name +
-				" crc=0x" + Long.toHexString(crc).toUpperCase() +
-				" end=" + endOffset);
-			*/
+                name +
+                " crc=0x" + Long.toHexString(crc).toUpperCase() +
+                " end=" + endOffset);
+            */
 
             index.writeUTF(name);
             index.writeLong(crc);
@@ -151,14 +151,14 @@ public class Indexer {
             throws IOException {
         RandomAccessFile file = new RandomAccessFile(archive, "r");
 
-		/*
-		 * The following is ugly but necessary to account for ZIP file
-		 * comments at the end of a file.
-		 *
-		 * Read backwards using a 44-byte array in 22-byte steps and search
-		 * for EOCD signature, then just copy the 22 header bytes into an
-		 * array of its own and give to EOCD constructor.
-		 */
+        /*
+         * The following is ugly but necessary to account for ZIP file
+         * comments at the end of a file.
+         *
+         * Read backwards using a 44-byte array in 22-byte steps and search
+         * for EOCD signature, then just copy the 22 header bytes into an
+         * array of its own and give to EOCD constructor.
+         */
         byte[] sig = {0x50, 0x4B, 0x05, 0x06};
         byte[] buf = new byte[2 * END_OF_CENTRAL_DIRECTORY_LENGTH];
 
@@ -168,10 +168,10 @@ public class Indexer {
             file.readFully(buf);
             sigPos = find(buf, sig);
 
-			/*
-			if(sigPos != -1)
-				System.out.print("found sig at "+sigPos+" in run " + i + ": ");
-			*/
+            /*
+            if(sigPos != -1)
+                System.out.print("found sig at "+sigPos+" in run " + i + ": ");
+            */
         }
 
         byte[] endOfCentralDirectory = new byte[END_OF_CENTRAL_DIRECTORY_LENGTH];
@@ -180,11 +180,11 @@ public class Indexer {
         EndOfCentralDirectory eocd = new EndOfCentralDirectory(endOfCentralDirectory);
         file.seek(eocd.centralDirectoryOffset);
 
-		/*
-		 * IMPORTANT: Use a Map implementation here that preserves
-		 * **insertion order** because we rely on it for computing
-		 * the start offset on the client later on!
-		 */
+        /*
+         * IMPORTANT: Use a Map implementation here that preserves
+         * **insertion order** because we rely on it for computing
+         * the start offset on the client later on!
+         */
         Map<Resource, Long> entries = new LinkedHashMap<>();
 
         Resource resource = null;
@@ -195,9 +195,9 @@ public class Indexer {
 
             CentralDirectoryRecord header = new CentralDirectoryRecord(bytes);
 
-			/*
-			 * Read name field
-			 */
+            /*
+             * Read name field
+             */
             byte[] nameBytes = new byte[header.nameLength];
             file.readFully(nameBytes);
             String name = new String(nameBytes, "us-ascii");
@@ -205,12 +205,12 @@ public class Indexer {
             file.skipBytes(header.extraLength);
             file.skipBytes(header.fileCommentLength);
 
-			/*
-			 * Take the *start* offset of the current resource minus one
-			 * as *end* offset for the previous resource. This allows us
-			 * to store only the end offset in the index, saving 4 bytes
-			 * per resource.
-			 */
+            /*
+             * Take the *start* offset of the current resource minus one
+             * as *end* offset for the previous resource. This allows us
+             * to store only the end offset in the index, saving 4 bytes
+             * per resource.
+             */
             if (resource != null) {
                 entries.put(resource, header.offsetToLocalFileHeader - 1L);
             }
@@ -219,9 +219,9 @@ public class Indexer {
             resource.setCrc(header.crc);
         }
 
-		/*
-		 * Don't forget the last resource!
-		 */
+        /*
+         * Don't forget the last resource!
+         */
         if (resource != null) {
             entries.put(resource, eocd.centralDirectoryOffset - 1L);
         }
@@ -230,69 +230,69 @@ public class Indexer {
     }
 
 
-	/*
-	 * Read compressed data and decompress it
-	 *
-	byte[] data = new byte[(int)compressedSize];
+    /*
+     * Read compressed data and decompress it
+     *
+    byte[] data = new byte[(int)compressedSize];
 
-	File dataFile = new File(outputDir, name);
-	if(compressedSize == 0)
-	{
-		dataFile.mkdirs();
-		System.out.println(name + " created.");
-	}
-	else
-	{
-		dataFile.getParentFile().mkdirs();
+    File dataFile = new File(outputDir, name);
+    if(compressedSize == 0)
+    {
+        dataFile.mkdirs();
+        System.out.println(name + " created.");
+    }
+    else
+    {
+        dataFile.getParentFile().mkdirs();
 
-		int dataSize = zipFile.read(data);
-		if(dataSize != compressedSize)
-		{
-			throw new IOException("The monkey demands " + dataSize + " bananas.");
-		}
+        int dataSize = zipFile.read(data);
+        if(dataSize != compressedSize)
+        {
+            throw new IOException("The monkey demands " + dataSize + " bananas.");
+        }
 
-		BufferedOutputStream out =
-			new BufferedOutputStream(
-				new FileOutputStream(dataFile));
+        BufferedOutputStream out =
+            new BufferedOutputStream(
+                new FileOutputStream(dataFile));
 
-		byte[] uncompressedData = new byte[(int)uncompressedSize];
+        byte[] uncompressedData = new byte[(int)uncompressedSize];
 
-		switch ((int)compressionMethod)
-		{
-			case METHOD_STORED:
-				uncompressedData = data;
-				break;
+        switch ((int)compressionMethod)
+        {
+            case METHOD_STORED:
+                uncompressedData = data;
+                break;
 
-			case METHOD_DEFLATED:
-				Inflater decompressor = new Inflater(true);
-				decompressor.setInput(data);
-				decompressor.inflate(uncompressedData);
-				break;
+            case METHOD_DEFLATED:
+                Inflater decompressor = new Inflater(true);
+                decompressor.setInput(data);
+                decompressor.inflate(uncompressedData);
+                break;
 
-			default:
-				throw new IOException(
-					"Unsupported compression method: " +
-					hex(compressionMethod));
-		}
+            default:
+                throw new IOException(
+                    "Unsupported compression method: " +
+                    hex(compressionMethod));
+        }
 
-		out.write(uncompressedData);
-		out.flush();
-		out.close();
+        out.write(uncompressedData);
+        out.flush();
+        out.close();
 
-		System.out.println(name + " written.");
-	}
-	*/
+        System.out.println(name + " written.");
+    }
+    */
 
-	/*
-	private static void print(byte[] buf)
-	{
-		for (int i = 0; i < buf.length; i++)
-		{
-			System.out.print(Integer.toHexString(buf[i] & 0xFF).toUpperCase());
-			System.out.print(" ");
-		}
-	}
-	*/
+    /*
+    private static void print(byte[] buf)
+    {
+        for (int i = 0; i < buf.length; i++)
+        {
+            System.out.print(Integer.toHexString(buf[i] & 0xFF).toUpperCase());
+            System.out.print(" ");
+        }
+    }
+    */
 
     private static int find(byte[] source, byte[] key) {
         search:

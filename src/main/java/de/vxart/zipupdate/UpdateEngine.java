@@ -106,18 +106,18 @@ public class UpdateEngine {
             System.exit(1);
         }
 
-		/*
+        /*
          * Use native LAF if possible
-		 */
+         */
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Failed to enable native LAF: " + ex.getMessage());
         }
 
-	    /*
+        /*
          * Parse arguments
-	     */
+         */
         File input = new File(args[0]);
 
         URL url = null;
@@ -128,15 +128,15 @@ public class UpdateEngine {
             System.exit(2);
         }
 
-	    /*
-		 * Create update engine and register graphical listener
-		 */
+        /*
+         * Create update engine and register graphical listener
+         */
         UpdateEngine engine = new UpdateEngine();
 
         if (input.isDirectory()) {
-			/*
-			 * Filter out anything but ZIP and JAR files
-			 */
+            /*
+             * Filter out anything but ZIP and JAR files
+             */
             File[] files = input.listFiles(
                     (dir, name) -> {
                         name = name.toLowerCase();
@@ -170,9 +170,9 @@ public class UpdateEngine {
             engine.update(archives, locations, messages);
         } else {
             if (!input.exists()) {
-				/*
-				 * Create a minimal dummy ZIP file as update target.
-				 */
+                /*
+                 * Create a minimal dummy ZIP file as update target.
+                 */
                 logger.log(Level.WARNING, "Update target doesn't exist, creating dummy: " + input.getAbsolutePath());
 
                 ZipOutputStream zos = new ZipOutputStream(
@@ -256,50 +256,50 @@ public class UpdateEngine {
             throws IOException {
         logger.log(Level.INFO, "TODO Updating " + archive.getName() + " from " + location.getUrl());
 
-		/*
-		 * Register any listeners on the UpdateLocation as well.
-		 */
+        /*
+         * Register any listeners on the UpdateLocation as well.
+         */
         for (ProgressListener listener : listeners) {
             location.addProgressListener(listener);
         }
 
         listeners.init("Initializing...");
 
-		/*
-		 * Initalize the patch set
-		 */
+        /*
+         * Initalize the patch set
+         */
         logger.log(Level.FINE, "Initializing patch set...");
         startTimer();
         Set<Resource> client = init(archive);
         logger.log(Level.FINE, "Initialized patch set (" + stopTimer() + " ms)");
 
-		/*
-		 * Fetch server-side CRC list
-		 */
+        /*
+         * Fetch server-side CRC list
+         */
         logger.log(Level.FINE, "Fetching server-side CRC list...");
         startTimer();
         Set<Resource> server = location.getResources();
         logger.log(Level.FINE, "Fetched server-side CRC list (" + stopTimer() + " ms)");
 
-		/*
-		 * Diff contents of ZIP files
-		 */
+        /*
+         * Diff contents of ZIP files
+         */
         logger.log(Level.FINE, "Diffing " + (server.size() + client.size()) + " items...");
         startTimer();
         Map<Resource, String> diff = diff(client, server);
         logger.log(Level.FINE, "Diffing finished (" + stopTimer() + " ms)");
 
-		/*
-		 * Some nice output for the people watching the program run :)
-		 */
+        /*
+         * Some nice output for the people watching the program run :)
+         */
 
         logger.log(Level.FINE, "Total items on server: " + server.size());
         logger.log(Level.FINE, "Total items on client: " + archive.size());
         printDiff(diff);
 
-		/*
-		 * Patch the ZIP file
-		 */
+        /*
+         * Patch the ZIP file
+         */
         logger.log(Level.FINE, "Patching " + archive.getName() + "...");
         startTimer();
         boolean patched = patch(archive, diff, location);
@@ -401,17 +401,17 @@ public class UpdateEngine {
     private Map<Resource, String> diff(Set<Resource> client, Set<Resource> server) {
         Map<Resource, String> diff = new HashMap<>(client.size());
 
-		/*
-		 * Populate diff with all client resource flagged REMOVE.
-		 */
+        /*
+         * Populate diff with all client resource flagged REMOVE.
+         */
         for (Resource resource : client) {
             diff.put(resource, Resource.FLAG_REMOVE);
         }
 
-		/*
-		 * Loop over all server resources and diff them with the
-		 * client resources to get the patch information we need.
-		 */
+        /*
+         * Loop over all server resources and diff them with the
+         * client resources to get the patch information we need.
+         */
         for (Resource serverResource : server) {
             String name = serverResource.getName();
 
@@ -424,27 +424,27 @@ public class UpdateEngine {
             }
 
             if (clientResource == null) {
-				/*
-				 * Resource new to client, flag ADD.
-				 */
+                /*
+                 * Resource new to client, flag ADD.
+                 */
                 diff.put(serverResource, Resource.FLAG_ADD);
             } else {
                 long serverCRC = serverResource.getCrc();
                 long clientCRC = clientResource.getCrc();
 
                 if (serverCRC == clientCRC) {
-					/*
-					 * Resources are the same.
-					 * Remove it from the diff because only differences go
-					 * in here; this also keeps the diff small speeding up
-					 * lookups and allows patching to fail fast if nothing
-					 * needs to be patched.
-					 */
+                    /*
+                     * Resources are the same.
+                     * Remove it from the diff because only differences go
+                     * in here; this also keeps the diff small speeding up
+                     * lookups and allows patching to fail fast if nothing
+                     * needs to be patched.
+                     */
                     diff.remove(clientResource);
                 } else {
-					/*
-					 * Resource changed, update required.
-					 */
+                    /*
+                     * Resource changed, update required.
+                     */
                     diff.put(clientResource, Resource.FLAG_UPDATE);
                 }
             }
@@ -464,21 +464,21 @@ public class UpdateEngine {
      */
     private boolean patch(ZipFile archive, Map<Resource, String> diff, UpdateLocation location)
             throws IOException {
-		/*
-		 * Nothing to do.
-		 */
+        /*
+         * Nothing to do.
+         */
         if (diff.size() < 1)
             return false;
 
-		/*
-		 * For compatibility with JAR files, the first entry needs
-		 * to be the manifest file (if it exists).
-		 *
-		 * As both sources, the local file and the downloaded resources,
-		 * use the same ordering one of them will always start with the
-		 * manifest entry. So we just need to figure out which one it is
-		 * and start the patching from that source.
-		 */
+        /*
+         * For compatibility with JAR files, the first entry needs
+         * to be the manifest file (if it exists).
+         *
+         * As both sources, the local file and the downloaded resources,
+         * use the same ordering one of them will always start with the
+         * manifest entry. So we just need to figure out which one it is
+         * and start the patching from that source.
+         */
         final String MANIFEST = "META-INF/MANIFEST.MF";
         boolean remoteFirst = false;
 
@@ -491,10 +491,10 @@ public class UpdateEngine {
             }
         }
 
-		/*
-		 * Create a tmp file in the same directory as they original
-		 * file so that it can be quickly renamed after patching.
-		 */
+        /*
+         * Create a tmp file in the same directory as they original
+         * file so that it can be quickly renamed after patching.
+         */
         File tmpFile = new File(archive.getName() + ".tmp");
         if (!tmpFile.delete() && tmpFile.exists()) {
             throw new IOException("Failed to delete existing tmp file: " + tmpFile);
@@ -503,24 +503,24 @@ public class UpdateEngine {
         ZipOutputStream zipFile = new ZipOutputStream(
                 new FileOutputStream(tmpFile));
 
-		/*
-		 * Fetch any resources that need to be updated/added
-		 */
+        /*
+         * Fetch any resources that need to be updated/added
+         */
         location.fetchData(diff);
 
         Iterator<Resource> serverResources = location.getData(diff);
 
-		/*
-		 * Init progress listeners for patching
-		 */
+        /*
+         * Init progress listeners for patching
+         */
         int items = archive.size() + diff.size();
         listeners.init("Patching...", 0, items);
 
         logger.log(Level.FINE, "Starting to patch...");
 
-		/*
-		 * Start patching
-		 */
+        /*
+         * Start patching
+         */
         if (remoteFirst) {
             logger.log(Level.FINER, "Patching first from REMOTE source.");
             patchRemotely(zipFile, diff, serverResources);
@@ -536,9 +536,9 @@ public class UpdateEngine {
 
         zipFile.close();
 
-		/*
-		 * Close archive or the renaming below will fail!
-		 */
+        /*
+         * Close archive or the renaming below will fail!
+         */
         archive.close();
 
         logger.log(Level.FINE, "Finalized patched file.");
@@ -585,10 +585,10 @@ public class UpdateEngine {
 
             listeners.update(listeners.getProgress() + 1);
 
-			/*
-			 * Not the fastest way to look up how a
-			 * Resource is flagged but good enough.
-			 */
+            /*
+             * Not the fastest way to look up how a
+             * Resource is flagged but good enough.
+             */
             String flag = Resource.FLAG_NOOP;
             for (Resource resource : diff.keySet()) {
                 if (name.equals(resource.getName())) {
@@ -676,18 +676,18 @@ public class UpdateEngine {
         startTime = 0;
         return time;
     }
-	/* ---
-	 */
+    /* ---
+     */
 
     /**
      * Registers a ProgressListener with this instance of an UpdateEngine.
      */
     public void addProgressListener(ProgressListener listener) {
-		/*
-		 * For MultiProgressListeners, get the actual "inner"
-		 * ProgressListener that represents the overall progress
-		 * and register it in the multi-listener list.
-		 */
+        /*
+         * For MultiProgressListeners, get the actual "inner"
+         * ProgressListener that represents the overall progress
+         * and register it in the multi-listener list.
+         */
         if (listener instanceof MultiProgressListener) {
             multiListeners.add(((MultiProgressListener) listener).getOverallProgressListener());
         }
@@ -699,11 +699,11 @@ public class UpdateEngine {
      * Unregisters a ProgressListener with this instance of an UpdateEngine.
      */
     public void removeProgressListener(ProgressListener listener) {
-		/*
-		 * For MultiProgressListeners, get the actual "inner"
-		 * ProgressListener that represents the overall progress
-		 * and unregister it from the multi-listener list.
-		 */
+        /*
+         * For MultiProgressListeners, get the actual "inner"
+         * ProgressListener that represents the overall progress
+         * and unregister it from the multi-listener list.
+         */
         if (listener instanceof MultiProgressListener) {
             multiListeners.remove(((MultiProgressListener) listener).getOverallProgressListener());
         }
