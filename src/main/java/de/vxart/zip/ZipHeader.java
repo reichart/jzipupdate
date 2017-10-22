@@ -67,7 +67,7 @@ public abstract class ZipHeader {
                             hex(actualSignature));
         }
 
-        return buffer.asReadOnlyBuffer();
+        return buffer;
     }
 
     /**
