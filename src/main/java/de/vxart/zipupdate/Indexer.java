@@ -215,8 +215,7 @@ public class Indexer {
                 entries.put(resource, header.offsetToLocalFileHeader - 1L);
             }
 
-            resource = new Resource(name);
-            resource.setCrc(header.crc);
+            resource = new Resource(name, header.crc);
         }
 
         /*

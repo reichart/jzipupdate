@@ -149,9 +149,8 @@ public class UpdateLocation {
              * Create a Resource for the index Set
              * we're going to return.
              */
-            Resource resource = new Resource(name);
-            resource.setCrc(index.readLong());
-            resources.add(resource);
+            long crc = index.readLong();
+            resources.add(new Resource(name, crc));
 
             /*
              * Store the start and end offsets for all
@@ -337,8 +336,7 @@ public class UpdateLocation {
                 throw new RuntimeException(ioex);
             }
 
-            Resource resource = new Resource(diff.keySet().iterator().next().getName());
-            resource.setData(data);
+            Resource resource = new Resource(diff.keySet().iterator().next().getName(), data);
 
             List<Resource> list = new LinkedList<>();
             list.add(resource);
@@ -381,9 +379,7 @@ public class UpdateLocation {
                     throw new RuntimeException(ioex);
                 }
 
-                Resource resource = new Resource(name);
-                resource.setData(data);
-                return resource;
+                return new Resource(name, data);
             }
 
             public void remove() {

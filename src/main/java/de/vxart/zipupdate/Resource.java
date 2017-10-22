@@ -24,9 +24,9 @@ import java.io.InputStream;
  * @author Philipp Reichart, philipp.reichart@vxart.de
  */
 public class Resource {
-    private String name;
-    private InputStream data;
-    private long crc;
+    private final String name;
+    private final InputStream data;
+    private final long crc;
 
     public final static String FLAG_NOOP = "===";
     public final static String FLAG_ADD = "+++";
@@ -34,32 +34,30 @@ public class Resource {
     public final static String FLAG_REMOVE = "---";
 
 
-    public Resource(String name) {
+    public Resource(String name, long crc, InputStream data) {
         this.name = name;
+        this.crc = crc;
+        this.data = data;
+    }
+
+    public Resource(String name, long crc) {
+        this(name, crc, null);
+    }
+
+    public Resource(String name, InputStream data) {
+        this(name, -1, data);
     }
 
     public InputStream getData() {
         return data;
     }
 
-    public void setData(InputStream data) {
-        this.data = data;
-    }
-
     public long getCrc() {
         return crc;
     }
 
-    public void setCrc(long crc) {
-        this.crc = crc;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

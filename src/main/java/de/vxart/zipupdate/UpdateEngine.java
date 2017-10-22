@@ -366,23 +366,13 @@ public class UpdateEngine {
      * @param archive the ZIP file to create a resource set for
      * @return
      */
-    private Set<Resource> init(ZipFile archive) {
-        assert archive != null;
-
+    private Set<Resource> init(ZipFile archive) throws IOException {
         Set<Resource> patchSet = new LinkedHashSet<>();
 
         for (Enumeration<? extends ZipEntry> entries = archive.entries(); entries.hasMoreElements(); ) {
             ZipEntry entry = entries.nextElement();
 
-            Resource resource = new Resource(entry.getName());
-            resource.setCrc(entry.getCrc());
-
-            try {
-                resource.setData(archive.getInputStream(entry));
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to open stream to " + entry.getName());
-            }
-
+            Resource resource = new Resource(entry.getName(), entry.getCrc(), archive.getInputStream(entry));
             patchSet.add(resource);
         }
 
