@@ -54,28 +54,8 @@ public class UpdateEngine {
 
     static {
         try {
-            final String logLevel = System.getProperty("de.vxart.zipupdate.UpdateEngine.loglevel", "INFO");
-            if (logLevel.length() > 2) {
-                if (logLevel.equalsIgnoreCase("ALL")) {
-                    logger.setLevel(Level.ALL);
-                } else if (logLevel.equalsIgnoreCase("FINEST")) {
-                    logger.setLevel(Level.FINEST);
-                } else if (logLevel.equalsIgnoreCase("CONFIG")) {
-                    logger.setLevel(Level.CONFIG);
-                } else if (logLevel.equalsIgnoreCase("FINER")) {
-                    logger.setLevel(Level.FINER);
-                } else if (logLevel.equalsIgnoreCase("FINE")) {
-                    logger.setLevel(Level.FINE);
-                } else if (logLevel.equalsIgnoreCase("INFO")) {
-                    logger.setLevel(Level.INFO);
-                } else if (logLevel.equalsIgnoreCase("WARNING")) {
-                    logger.setLevel(Level.WARNING);
-                } else if (logLevel.equalsIgnoreCase("SEVERE")) {
-                    logger.setLevel(Level.SEVERE);
-                }
-            } else {
-                logger.setLevel(Level.INFO);
-            }
+            String logLevel = System.getProperty("de.vxart.zipupdate.UpdateEngine.loglevel", "INFO");
+            logger.setLevel(Level.parse(logLevel));
             logger.setUseParentHandlers(false);
             logger.addHandler(new ConsoleHandler());
             logger.addHandler(new FileHandler("%t/jzipupdate.log"));
